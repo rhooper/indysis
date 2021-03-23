@@ -56,7 +56,7 @@ django-simple-import==2.0.2
 django-smuggler==0.9.0
 django-timezone-field==3.0
 django-widget-tweaks==1.4.3
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 docutils==0.16
 dparse==0.5.1
 drf-url-filters==0.5.1
