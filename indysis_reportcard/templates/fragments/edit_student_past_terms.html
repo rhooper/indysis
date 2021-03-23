@@ -1,0 +1,32 @@
+{% load index  %}
+{% for t in terms %}
+  <td class="term">
+
+  {% if element_to_past|index:t|indexnone:item %}
+
+    {% if section.second_gradingscheme %}
+    <table class="table table-condensed"><tr><td width="50%">
+    {% endif %}
+
+    {% if element_to_past|index:t|index:item|attr:"percentile" %}
+      {{ element_to_past|index:t|index:item|attr:"percentile" }}
+    {% else %}
+      {{ element_to_past|index:t|index:item|attr:"choice" }}
+    {% endif %}
+
+    {% if section.second_gradingscheme %}
+      </td><td width="50%">
+      {% if element_to_past|index:t|index:item|attr:"second_percentile" %}
+        {{ element_to_past|index:t|index:item|attr:"second_percentile" }}
+      {% else %}
+        {{ element_to_past|index:t|index:item|attr:"second_choice" }}
+      {% endif %}
+      </td></tr></table>
+    {% endif %}
+
+  {% else %}
+    n/a
+  {% endif %}
+
+  </td>
+{% endfor %}

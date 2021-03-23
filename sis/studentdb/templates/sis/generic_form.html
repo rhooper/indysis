@@ -1,0 +1,38 @@
+{% extends "sis_base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+  {{ formset.media }}
+{% endblock %}
+
+{% block nav_page_specific %}
+  {% if breadcrumbs %}
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      {% for crumb in breadcrumbs %}
+        <li>
+          {% if crumb.link %}
+            <a href="{{ crumb.link }}">
+          {% endif %}
+          {{ crumb.name }}
+          {% if crumb.link %}
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <h2> {{ subtitle }} </h2>
+  {{ msg }}
+  <form method="post" enctype="multipart/form-data" action="">
+    {% csrf_token %}
+    <table class="table table-striped table-bordered table-responsive">
+      {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit"/>
+  </form>
+{% endblock %}
+

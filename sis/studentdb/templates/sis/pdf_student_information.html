@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    body {
+      font-family: Arial, Sans-Serif;
+      font-size: 11pt;
+      line-height: 1.1em;
+    }
+    .page {
+      page-break-after: always;
+    }
+    td {
+      vertical-align: top;
+      padding-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+
+{% for student in students %}
+
+  <div class="page">
+    <center><h3>Student Information</h3></center>
+
+    {{ header }}
+
+
+    <p>
+      <strong>Student/Étudiant:</strong>
+    </p>
+    <table>
+      <tr><td width="200px">Name/nom:</td><td> {{ student.fullname }}</td></tr>
+      <tr><td>Grade/classe:</td><td> {{ student.year }}</td></tr>
+      <tr><td>Birthdate/date de naissance:</td><td> {{ student.bday|date:"Y-m-d" }}</td></tr>
+    </table>
+
+    {% for parent in student.parents %}
+      <p><strong>Parent {{ forloop.counter }}:</strong></p>
+    <table>
+      <tr><td width="200px">Name/nom:</td><td>{{ parent.fullname }}</td></tr>
+      <tr><td>Cell number/cellulaire:</td><td> {{ parent.phone_cell }}</td></tr>
+      <tr><td>Work number/travail:</td><td> {{ parent.phone_work }}</td></tr>
+      <tr><td>Home address/address:</td><td>
+        {{ student.street|default_if_none:"" }}<br>
+        {{ student.city|default_if_none:"" }}, {{ student.state|default_if_none:"" }}<br>
+        {{ student.zip|default_if_none:"" }}
+      </td></tr>
+      <tr><td>Email (s) / courriel (s):</td><td>
+        {{ parent.email|default_if_none:"" }}<br>
+        {{ parent.alt_email|default_if_none:"" }}
+      </td></tr>
+    </table>
+    {% endfor %}
+
+    {{ footer }}
+
+  </div>
+
+{% endfor %}
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends "responsive_dashboard/dashlet.html" %}
+{% load admin_urls %}
+{% block dashlet_body %}
+  <ul class="list-unstyled">
+    {% for link in links %}
+    <li><a href="{{ link.link }}">{{ link.text }}</a>
+      {% if link.desc %} - {{ link.desc }}{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+{% block dashlet_footer %}{% endblock %}

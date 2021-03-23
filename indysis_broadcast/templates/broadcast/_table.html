@@ -1,0 +1,41 @@
+<table class="table-condensed table table-striped">
+<thead>
+  <tr>
+    <th>No</th>
+    <th>Contact</th>
+    <th>Type</th>
+    <th>Number</th>
+    <th>Status</th>
+  </tr>
+</thead>
+{% for recipient in broadcast.get_recipients %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>
+      {% if recipient.faculty %}
+        {{ recipient.faculty.fullname }}
+      {% elif recipient.recipient %}
+        {{ recipient.recipient.fullname }} ({{ recipient.recipient.relationship_to_student }}:
+        {% for student in recipient.recipient.student_set.all %}
+          {{ student.longname }}{% if not forloop.last %},{% endif%}
+        {% endfor %})
+      {% endif %}
+    </td>
+    <td>
+      {% if recipient.faculty %}
+        Staff
+      {% elif recipient.recipient %}
+        Student Contact
+      {% else %}
+        Freeform
+      {% endif %}
+    </td>
+    <td>
+      {{ recipient.phone_number }}
+    </td>
+    <td>
+      {{ recipient.status }}
+    </td>
+  </tr>
+{% endfor %}
+</table>

@@ -1,0 +1,76 @@
+{% extends "reportcard_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block title %}Report Cards{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li>Report Cards</li>
+  </ol>
+{% endblock %}
+
+{% block content %}
+
+  <style type="text/css">
+    tr.open {
+      background-color: #cfc;
+      font-weight: bold;
+    }
+
+    tr.open td {
+      background-color: #cfc;
+      font-weight: bold;
+    }
+  </style>
+  <div>
+
+    <h2>Report Cards - {{ school_year }}</h2>
+
+    <table class="table table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th>Term</th>
+        <th>Status</th>
+        {% if is_admin %}
+          <th colspan='2'>&nbsp;</th>
+        {% endif %}
+      </tr>
+      </thead>
+      <tbody>
+
+      {% for term in terms %}
+        <tr class='{% if term.is_open %}open{% endif %}'>
+          {% if is_admin %}
+            <td>{{ term }}</td>
+            <td>{{ term.status }}</td>
+            <td><a href='{% url 'reportcard:view_term' term.id %}'>Teacher View</a></td>
+            <td><a href='{% url 'reportcard:term_admin' term.id %}'>Term Administration</a></td>
+          {% else %}
+            <td><a href='{% url 'reportcard:view_term' term.id %}'>{{ term }}</a></td>
+            <td>{{ term.status }}</td>
+          {% endif %}
+          {% empty %}
+        <tr>
+          <td colspan=2><em>No report cards yet for {{ school_year }}</em></td>
+        </tr>
+      {% endfor %}
+
+      </tbody>
+    </table>
+
+    {% if past_years and is_admin %}
+      <h3>Other Years</h3>
+      {% for year in past_years %}
+        <p><a href='?year={{ year.id }}'>{{ year.name }}</a></p>
+      {% endfor %}
+    {% endif %}
+
+    {% if is_admin %}
+      <a class='btn btn-primary' href='{% url 'admin:app_list' app_label="indysis_reportcard"%}'>Data Management</a>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

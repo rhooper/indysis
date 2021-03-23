@@ -1,0 +1,65 @@
+{% extends "sis_base.html" %}
+{% load i18n static bootstrap %}
+
+{% block content %}
+
+  <style type="text/css">
+    h4 a {
+      color: blue;
+      text-decoration: underline;
+      font-size: 120%;
+    }
+  </style>
+  {% if config.ALLOW_GOOGLE_AUTH %}
+    <script type="text/javascript">
+      $(function () {
+        $('a.login-form').click(function () {
+          $('.login-form').show();
+          return false;
+        });
+      });
+    </script>
+  {% endif %}
+
+  {% if config.ALLOW_GOOGLE_AUTH %}
+    <div class="row">
+      <div class="col-xs-12 col-md-6 col-md-push-3">
+        <p>Please sign in using your school Google account by clicking on the button below:</p>
+        <p style="text-align: center"><a href="{% url "social:begin" "google-oauth2" %}"><img
+            src="{% static "images/btn_google_signin_dark_normal_web.png" %}" alt="Sign in with Google"
+            aria-label="Sign in with Google" role="button"></a></p>
+
+      <p class="small">
+        {% trans "In some circumstances, administrators may need to <a class='login-form' href='#'>log in with username/password</a>." %}
+      </p>
+      </div>
+    </div>
+
+  {% endif %}
+
+
+  <div style='{% if config.ALLOW_GOOGLE_AUTH %}display: none{% endif %}' class='login-form row'>
+    <div class="col-xs-12 col-md-6 col-md-push-3">
+
+      <form method="post" action="" class="form-horizontal">
+        {{ form.non_field_errors }}
+        {% csrf_token %}
+        {{ form|bootstrap }}
+
+        <div class="loginbuttonwrap">
+          <input type="submit" class="btn btn-primary" value="Log In">
+        </div>
+
+        <input type="hidden" name="next" value="{{ next }}"/>
+      </form>
+    </div>
+  </div>
+
+  <div class="clear"></div>
+
+  <!--[if IE 7]>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<![endif]-->
+
+{% endblock %}

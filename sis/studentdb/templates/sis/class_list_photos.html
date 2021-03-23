@@ -1,0 +1,30 @@
+{% extends "sis_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+
+{% block content %}
+
+  <style type="text/css">
+    table td, table th, table a {
+      font-size: 11pt;
+      line-height: 15pt;
+    } </style>
+
+  <h2>{{ class }}</h2>
+
+  <div class='row'>
+    {% for student in students %}
+      <div class='col-xs-3'>
+        {% if student.pic %}
+          <a href='{% url 'studentdb:view-student' student.id %}'><img src='{{ student.pic.url_530x400 }}'></a><br>
+        {% else %}
+          <p>No Photo Available</p>
+        {% endif %}
+        <center><a href='{% url 'studentdb:view-student' student.id %}'>{{ student.fullname }}</a></center>
+        {% cycle '' '' "</div><div class='row'>" %}<br><br>
+      </div>
+    {% endfor %}
+  </div>
+
+{% endblock %}

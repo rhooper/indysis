@@ -1,0 +1,316 @@
+{% extends "sis_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block extrahead %}
+  <link rel="stylesheet" type="text/css" href="{% static "css/view_student_style.css" %}"/>
+
+  <script type="text/javascript" src="{% static "js/view_student.js" %}"></script>
+
+{% endblock %}
+
+{% block content-class %}container{% endblock %}
+
+{% block content %}
+
+  {% if student %}
+    <div class="row hidden-print">
+      <div class="col-xs-4">
+        <a href="?previous=1"> &lt;&lt; {% trans "Previous student" %} </a>
+      </div>
+      <div class="col-xs-4">
+        <div class="">
+          <input
+              onclick="ajax_include_deleted()"
+              id="id_include_deleted"
+              type="checkbox"
+              {% if include_inactive %} checked="checked" {% endif %}
+          />
+          <label style="font-weight: normal" for="id_include_deleted">{% trans "Include inactive in search?" %}</label>
+        </div>
+      </div>
+      <div class="col-xs-4" style="text-align: right">
+        <a href="?next=1">{% trans "Next student" %} &gt;&gt;</a>
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col-xs-6'>
+        <h2>{{ student }}</h2>
+      </div>
+      <div class='col-xs-3'>
+        {% if not student.is_active %}
+          <h3 class="alert alert-warning">{% trans "Inactive Student" %}</h3>
+        {% endif %}
+        {% if student.year %}
+          <h3 class='no_padding'><a class='blue'
+                                    href='{% url 'studentdb:class_list' student.year.id %}'>{{ student.year }}</a></h3>
+        {% endif %}
+      </div>
+      <div class="col-xs-3 hidden-print" style="text-align: right">
+        {% if perms.attendance.change_studentattendance %}
+          <a href="{% url "admin:attendance_studentattendance_add" %}?student={{ student.id }}">
+            {% trans "Record Attendance" %}
+          </a>
+          <br/>
+        {% endif %}
+        {% if perms.studentdb.change_student %}
+          <a href="{% url "admin:studentdb_student_change" student.id %}">
+            {% trans "Edit Student" %}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if today_attendance %}
+      <div class='row'>
+        <div class='col-xs-6'>
+          <h4>{{ today_attendance.date }} {% trans "Attendance" %}: <strong>{{ today_attendance.status }}</strong></h4>
+        </div>
+        <div class='col-xs-6'>
+          {% if today_attendance.notes %}<p>{{ today_attendance.notes }}</p>{% endif %}
+          {% if today_attendance.recorded_by %}<p>Recorded By: {{ today_attendance.recorded_by }}</p>{% endif %}
+          {% if today_attendance.time %}<p>Time: {{ today_attendance.time }}</p>{% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row sv-section">
+    <div id="a_general" class="section-header">
+      <a href="javascript:void(0)">{% trans "General Information" %}</a>
+    </div>
+    <div class="sv-main">
+    <div class="row">
+    <div class="col-xs-5 col-xs-push-7">
+      {% if student.pic %}
+        <div style='padding: 1em'>
+          <a href="/media/{{ student.pic }}">
+            <img src="{{ student.pic.url_530x400 }}" class="img-responsive"/>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="col-xs-7 col-xs-pull-5">
+    <table class="section-table">
+    <tr>
+      <td class="thing"> {% trans "Full name" %}</td>
+      <td> {{ student.first_name }} {{ student.mname|default_if_none:"" }} {{ student.last_name }} </td>
+    </tr>
+    <tr>
+      <td class="thing"> {% trans "Birth date" %}</td>
+      <td> {{ student.bday }} (age {{ student.age }})</td>
+    </tr>
+
+    <tr>
+      <td class="thing"> {% trans "Gender" %}</td>
+      <td> {{ student.sex }} </td>
+    </tr>
+
+    {% if siblings %}
+      <tr>
+        <td class="thing"> {% trans "Sibling(s)" %}</td>
+        <td>
+          <ul class="list-unstyled">
+            {% for sib in siblings %}
+              <li><a href='{% url 'studentdb:view-student' sib.pk %}'> {{ sib }} </a></li> {% endfor %}</ul>
+        </td>
+      </tr>
+    {% endif %}
+
+    {% if student.student_account_email %}
+      <tr>
+        <td class="thing">{% trans "Student Email" %}:</td>
+        <td><a href="mail:{{ student.student_account_email }}">{{ student.student_account_email }}</a></td>
+      </tr>
+    {% endif %}
+
+    {% if not parents %}
+      <tr>
+        <td class="thing"> {% trans "Parent e-mail" %}</td>
+        <td><a href="mailto:{{ student.parent_email }}">{{ student.parent_email }}</a></td>
+      </tr>
+    {% endif %}
+    {% if numbers %}
+      <tr>
+        <td class="thing"> {% trans "Student phone number" %}</td>
+        <td>{% for number in numbers %} {{ number }}<br/> {% endfor %} </td>
+      </tr>
+    {% endif %}
+
+    {% if student.studenthealthconcern_set.count > 0 %}
+      <tr class='healthconcern'>
+        <td class='thing'>{% trans "Health Concerns" %}</td>
+        <td>
+          <table class="table table-responsive table-striped table-condensed">
+            {% for concern in student.studenthealthconcern_set.all %}
+              <tr>
+                <td>{{ concern.type }}</td>
+                <td>{{ concern.name }}</td>
+                <td>{{ concern.notes }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+      </tr>
+    {% endif %}
+
+    {% if student.photo_permission != 'Yes' %}
+      <tr class='photopermission_{{ student.photo_permission }}'>
+        <td>{% trans "Photo Permission" %}:</td>
+        <td>{{ student.photo_permission }}</td>
+      </tr>
+    {% endif %}
+
+    {% if student.notes %}
+      <tr>
+        <td class="thing"> {% trans "Notes" %}</td>
+        <td> {{ student.notes }} </td>
+      </tr>
+    {% endif %}
+
+    <tr>
+      <td class="thing"> {% trans "Parents(s)" %}</td>
+      <td>
+        {% for ec in parents %}
+          <div class="row">
+          <div class="col-xs-11">
+          <strong>{{ ec.relationship_to_student }}</strong> - {{ ec.fname }} {{ ec.lname }}<br/>
+          {% if ec.email %}<a href="mailto:{{ ec.email }}">{{ ec.email }}</a><br/>{% endif %}
+          {% if ec.alt_email %}<a href="mailto:{{ ec.alt_email }}">{{ ec.alt_email }}</a><br/>{% endif %}
+          {% for number in ec.emergencycontactnumber_set.all %}
+            <span class="thing">{{ number.get_type_display }}:</span>
+            {{ number.full_number }}
+            {{ number.note }}
+            {% if number.primary %} (Primary) {% endif %}
+            <br/>{% endfor %}
+          {% if ec.notes %}<span class="thing">{% trans "Notes" %}</span>: {{ ec.notes|linebreaksbr }}{% endif %}
+          {% if ec.street %}{{ ec.street|default:'' }}<br>{% endif %}
+          {% if ec.city %}{{ ec.city|default:'' }}, {{ ec.state|default:'' }}<br>{% endif %}
+          {% if ec.zip %}{{ ec.zip|default:'' }}<br>{% endif %}
+          </div>
+          {% if perms.studentdb.change_emergencycontact %}
+            <div class="col-xs-1">
+            <a href="{% url "admin:studentdb_emergencycontact_change" ec.id %}">Edit</a>
+            </div>
+          {% endif %}
+          </div>
+        {% endfor %}
+
+      </td>
+    </tr>
+
+    {% if emergency_contacts %}
+      <tr>
+        <td class="thing"> {% trans "Emergency Contact(s)<" %}/td>
+        <td>
+          {% for ec in emergency_contacts %}
+            <p><strong>{{ ec.relationship_to_student }}</strong> - {{ ec.fname }} {{ ec.lname }}<br/>
+            {% if ec.email %}<a href="mailto:{{ ec.email }}">{{ ec.email }}</a><br/>{% endif %}
+            {% if ec.alt_email %}<a href="mailto:{{ ec.alt_email }}">{{ ec.alt_email }}</a><br/>{% endif %}
+            {% for number in ec.emergencycontactnumber_set.all %}
+              <span class="thing">{{ number.get_type_display }}:</span>
+              {{ number.full_number }}
+              {{ number.note }}
+              {% if number.primary %} ({% trans "Primary" %}) {% endif %}
+              <br/>{% endfor %}
+
+            {% if ec.notes %}<span class="thing">{% trans "Notes" %}</span>: {{ ec.notes|linebreaksbr }}{% endif %}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
+
+    <tr>
+      <td class='thing'>{% trans "Volunteer Hours" %}:</td>
+      <td>{{ student.volunteer_hours }} {% trans "hours" %} ({% trans "family total for" %} {{ school_year.name }})</td>
+
+    <tr>
+    <td class="thing"> {% trans "Health Card" %}</td>
+    <td> {{ student.healthcard_no|default_if_none:"" }}
+  {% endif %}
+
+{% if student.alert %}
+  <tr>
+    <td class="thing"> {% trans "Alert" %}</td>
+    <td> {{ student.alert }} </td>
+  </tr>
+{% endif %}
+{% if false %}
+  <tr>
+    <td class="thing"> {% trans "Parent/Guardian" %}</td>
+    <td> {{ student.parent_guardian }} </td>
+  </tr>
+  <tr>
+    <td class="thing"> {% trans "Address" %}</td>
+    <td> {{ student.street }} <br/> {{ student.city }}, {{ student.state }} {{ student.zip }} </td>
+  </tr>
+{% endif %}
+{% for field in student.get_all_custom_values %}
+  <tr>
+    <td class="thing">{{ field.name }}</td>
+    <td>{{ field.value }}</td>
+  </tr>
+{% endfor %}
+
+</table>
+</div>
+</div>
+
+</div> <!-- .sv-main -->
+</div> <!-- .sv-section -->
+
+  {% if 'sis.attendance' in INSTALLED_APPS %}
+    <div class="sv-section hidden-print">
+
+    <div id="a_attendance" class="section-header">
+      <a href="javascript:void(0)">Attendance</a>
+    </div>
+
+    <div class="sv-main">
+    {% if perms.attendance.change_studentattendance %}<a class="edit_link"
+                                                         href="{% url "admin:attendance_studentattendance_changelist" %}?student__id__exact={{ student.id }}">
+      Edit </a><br/> {% endif %}
+    {% for year in years %}
+      {% if forloop.first %}
+        <div id="toggle_subsection_attendance" class="sv-section hidden-print">
+        <a class="section-header subsection hidden-print sub-expanded" href="javascript:void(0)"
+           id="toggle_section_attendance" onclick='options_toggle(id)'>School Year {{ year }}</a>
+        <div class="sv-main" style="display:block;">
+      {% else %}
+        <div id="toggle_subsection_attendance" class="sv-section hidden-print">
+        <a class="section-header subsection hidden-print" href="javascript:void(0)" id="toggle_section_attendance"
+           onclick='options_toggle(id)'>{{ year }}</a>
+        <div class="sv-main">
+      {% endif %}
+    <span class="spacer">
+                                                    Total absent:
+                                                        {{ year.attendance_absense_with_half }} day{{ year.attendance_absense_with_half|pluralize }}
+                                                </span>
+    <span class="spacer">
+                                                    Total late: {{ year.attendance_tardy }} time{{ year.attendance_tardy|pluralize }}
+                                                </span>
+    <table class="attendance-table table table-responsive table-striped table-condensed">
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Status</th>
+        <th width='80%'>Notes</th>
+      </tr>
+      </thead>
+      {% for attendance in year.attendances %}
+        <tr>
+          <td> {{ attendance.date }} </td>
+          <td> {{ attendance.status }} </td>
+          <td> {{ attendance.notes }} </td>
+        </tr>
+      {% endfor %}
+    </table>
+    </div>
+    </div>
+    {% endfor %}
+  </div> <!-- .sv-main -->
+  </div> <!-- .sv-section -->
+  {% endif %}
+
+{% endblock %}

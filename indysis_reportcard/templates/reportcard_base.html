@@ -1,0 +1,24 @@
+{% extends "sis_base.html" %}
+{% load static i18n bootstrap3 %}
+
+{% block head %}
+  {{ block.super }}
+  <script src="{% static 'indysis_reportcard/js/autosave.js' %}"></script>
+{% endblock %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "indysis_reportcard/css/reportcard.css" %}"/>
+{% endblock %}
+
+{% block extra_module_nav %}
+  {{ block.super }}
+  <li class="{% if app_name == "indysis_reportcard" %} active{% endif %} dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+       aria-expanded="false">{% trans "Report Cards" %} <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item"
+             href="{% url 'indysis_reportcard:index' %}"> {% trans 'Report Cards' %} </a></li>
+    </ul>
+  </li>
+{% endblock %}

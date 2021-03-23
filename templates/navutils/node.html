@@ -1,0 +1,18 @@
+{% load navutils_tags %}
+
+{% if viewable_children %}
+
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" {% for attr, value in node.link_attrs.items %} {{ attr }}="{{ value }}"{% endfor %} data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ node.label }} <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        {% for children_node in viewable_children %}
+            {% render_node node=children_node current_depth=current_depth|add:'1' %}
+        {% endfor %}
+      </ul>
+    </li>
+
+{% else %}
+  <li class="{% if is_current %} {{ menu_config.CURRENT_MENU_ITEM_CLASS }}{% endif %}">
+    <a href="{{ node.get_url }}"{% for attr, value in node.link_attrs.items %} {{ attr }}="{{ value }}"{% endfor %}>{{ node.label }}</a>
+  </li>
+{% endif %}

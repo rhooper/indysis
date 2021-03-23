@@ -1,0 +1,53 @@
+{% load index  %}
+
+<div class="form-inline">
+  {% if section.second_gradingscheme and section.gradingscheme_label %}
+    <label>{{ section.gradingscheme_label }}</label>
+  {% endif %}
+
+  {% if section.gradingscheme.percentile %}
+    {{ element_to_form|index:item|index:"percentile" }}
+    {% if instance_errors|index:item|indexnone:"percentile" %}
+      <div class='col-xs-8'>{% for err in instance_errors|index:item|index:"percentile" %}
+        <ul class='alert warning'>{{ err }}</ul>{% endfor %}</div>
+    {% endif %}
+    or
+  {% endif %}
+
+  <div class="input-group">
+    {{ element_to_form|index:item|index:"choice" }}
+  </div>
+</div>
+
+{% if instance_errors|index:item|indexnone:"choice" %}
+  <div class='col-xs-8'>{% for err in instance_errors|index:item|index:"choice" %}
+    <ul class='alert warning'>{{ err }}</ul>{% endfor %}</div>
+{% endif %}
+
+{% if section.second_gradingscheme %}
+  <div class="form-inline">
+    <div class="form-group">
+    {% if section.second_gradingscheme_label %}
+      <label>{{ section.second_gradingscheme_label }}</label>
+    {% endif %}
+
+    {% if section.second_gradingscheme.percentile %}
+      {{ element_to_form|index:item|index:"second_percentile" }}
+      {% if instance_errors|index:item|indexnone:"second_percentile" %}
+        <div class='col-xs-8'>{% for err in instance_errors|index:item|index:"second_percentile" %}
+          <ul class='alert warning'>{{ err }}</ul>{% endfor %}</div>
+      {% endif %}
+      or
+    {% endif %}
+
+    <div class="input-group">
+      {{ element_to_form|index:item|index:"second_choice" }}
+    </div>
+
+    {% if instance_errors|index:item|indexnone:"second_choice" %}
+      <div class='col-xs-8'>{% for err in instance_errors|index:item|index:"second_choice" %}
+        <ul class='alert warning'>{{ err }}</ul>{% endfor %}</div>
+    {% endif %}
+    </div>
+  </div>
+{% endif %}

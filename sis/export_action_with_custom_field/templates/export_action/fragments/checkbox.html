@@ -1,0 +1,15 @@
+<tr class="export_table form-group">
+    <td class="export_table">
+        <input
+            type="checkbox"
+            class="check_field" {% if check_default %} checked="checked" {% endif %}
+            name="{{ path }}{{ field.name }}"
+            id="{{ path }}{{ field.name }}"
+        />
+    </td>
+    <td class="export_table">
+      <label for="{{ path }}{{ field.name }}" class="single-checkbox">
+        {% firstof field.verbose_name field %}
+      </label>
+    </td>
+</tr>

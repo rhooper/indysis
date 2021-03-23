@@ -1,0 +1,42 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify %}
+
+{% block object-tools-items %}
+  <li><a href="history/">{% trans "History" %}</a></li>
+  {% if object_id %}
+    <li><a href="{% url "admin:auth_user_change" object_id %}">User Permissions and Password</a></li>
+  {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ block.super }}
+  <script type="text/javascript">
+    function check_inactive() {
+      if ($('#id_inactive').is(':checked')) {
+        $('div.row.date_dismissed.reason_left').show('fast');
+      } else {
+        $('div.row.date_dismissed.reason_left').hide();
+      }
+    }
+
+    $(document).ready(function () {
+      check_inactive();
+
+      $('#id_inactive').change(function () {
+        check_inactive();
+      });
+
+      $('#student_form').submit(function () {
+        if (
+          $('#id_inactive').is(':checked') &&
+          $('#id_date_dismissed').val() == '' &&
+          $('#id_reason_left').val() == ''
+        ) {
+          return confirm('You set student to inactive but didn\'t give a date dismissed nor reason left. Are you sure you want to submit?');
+        }
+        return true;
+      });
+
+    });
+  </script>
+{% endblock %}

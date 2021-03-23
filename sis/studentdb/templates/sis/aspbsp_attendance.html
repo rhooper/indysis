@@ -1,0 +1,121 @@
+{% extends "sis_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block title %}{{title}} school attendance{% endblock %}
+
+{% block content_title %}  <h3>{{title}} School Attendance - {{ grade.name }}</h3>{% endblock %}
+
+{% block stylesheets %}
+{{ block.super }}
+<style>
+  .table-bordered>tbody>tr>td.eod, .table-bordered>tbody>tr>th.eod { border-right: 2px solid black; }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+  <script>
+  $(function () {
+    $(".cb input:checkbox").click(function () {
+      var group = $(this).attr("name");
+      if (group.endsWith("_alt")) {
+        $("input:checkbox[name=" + group.replace("_alt", "") + "]").prop("checked", false);
+      } else {
+        $("input:checkbox[name=" + group + "_alt]").prop("checked", false);
+      }
+    });
+  });
+  </script>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+
+  {% for gr in grades %}
+    {% if gr.id == grade.id %}
+      <strong>{{ gr.name }}</strong>
+    {% else %}
+      <a href="{% url link_target gr.id start_date|date:"Y-m-d" %}">{{ gr.name }}</a>
+    {% endif %}
+    {% if not forloop.last %} | {% endif %}
+  {% endfor %}
+
+  <h4>Start: {{ start_date|date:"D N j" }} &nbsp; &nbsp; &nbsp; End: {{ end_date|date:"D N j" }} </h4>
+
+  <p><a
+      href="{% url link_target grade.id prev_week|date:"Y-m-d" %}">Prev: {{ prev_week|date:"N j" }}</a>
+    |
+    <a href="{% url link_target grade.id next_week|date:"Y-m-d" %}">Next: {{ next_week|date:"N j" }}</a>
+  </p>
+
+  {% for dict in formset.errors %}
+    {% for error in dict.values %}
+      {{ error }}
+    {% endfor %}
+  {% endfor %}
+
+  <form method="post" action="">
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    <table class="table table-striped table-bordered table-responsive">
+      <thead><tr>
+      <th>Student</th>
+      <th>Mon</th>
+      {% if drop_in %}
+        <th class="eod">Mon
+          <br>{{ drop_in.short_name }}</th>
+      {% endif %}
+      <th>Tue</th>
+      {% if drop_in %}
+        <th class="eod">Tue
+          <br>{{ drop_in.short_name }}</th>
+      {% endif %}
+      <th>Wed</th>
+      {% if drop_in %}
+        <th class="eod">Wed
+          <br>{{ drop_in.short_name }}</th>
+      {% endif %}
+      <th>Thu</th>
+      {% if drop_in %}
+        <th class="eod">Thu
+          <br>{{ drop_in.short_name }}</th>
+      {% endif %}
+      <th>Fri</th>
+      {% if drop_in %}
+        <th class="eod">Fri
+          <br>{{ drop_in.short_name }}</th>
+      {% endif %}
+      </tr>
+      </thead>
+      <tbody>
+      {% for form in formset %}
+        <tr>
+          <td>
+            {{ form.student_name.value }}
+            {{ form.student_id.as_hidden }}
+            {{ form.student_name.as_hidden }}</td>
+          <td class="cb">{{ form.monday }}</td>
+          {% if drop_in %}<td class="cb eod">{{ form.monday_alt }}</td>{% endif %}
+          <td class="cb">{{ form.tuesday }}</td>
+          {% if drop_in %}<td class="cb eod">{{ form.tuesday_alt }}</td>{% endif %}
+          <td class="cb">{{ form.wednesday }}</td>
+          {% if drop_in %}<td class="cb eod">{{ form.wednesday_alt }}</td>{% endif %}
+          <td class="cb">{{ form.thursday }}</td>
+          {% if drop_in %}<td class="cb eod">{{ form.thursday_alt }}</td>{% endif %}
+          <td class="cb">{{ form.friday }}</td>
+          {% if drop_in %}<td class="cb eod">{{ form.friday_alt }}</td>{% endif %}
+        </tr>
+
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <input type="submit" value="Save" class="btn btn-primary">
+
+  </form>
+</div>
+{% endblock %}

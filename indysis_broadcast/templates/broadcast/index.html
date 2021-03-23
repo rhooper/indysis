@@ -1,0 +1,34 @@
+{% extends "sis_base.html" %}
+{% load i18n bootstrap static %}
+
+{% block title %}{% trans "Emergency Broadcast" %}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">{% trans "Home" %}</a></li>
+    <li>{% trans "Emergency Broadcast" %}</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>{% trans "Emergency Broadcast" %}</h1>
+
+
+    <p>{% trans "Send an emergency broadcast text message" %}:</p>
+
+      <form method="post" action="">
+        {% csrf_token %}
+        {{ form|bootstrap }}
+
+        <button type="submit" class="btn btn-primary">Continue to Test</button>
+
+      </form>
+  <br>
+
+  <p>
+    <a href="{% url 'admin:indysis_broadcast_broadcast_changelist' %}">Manage Broadcasts</a>
+  </p>
+
+{% endblock %}

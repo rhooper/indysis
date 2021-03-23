@@ -1,0 +1,50 @@
+{% extends "responsive_dashboard/dashlet.html" %}
+
+{% block dashlet_header %}
+  <a href="{% url 'admin:studentdb_student_changelist' %}">Student Information</a>
+{% endblock %}
+
+{% block dashlet_body %}
+  <form id="form_view_student_dashlet" class="view_student" action="/studentdb/view_student/" method="post">
+    <!-- Below this comment is the fancy auto-complete search function - Jeff -->
+    <!--br tag to separate search from student? see mockup-->
+    <br>
+    {% csrf_token %}
+    <div class="form-group" style="margin: 0 auto; width: 80%">
+      <input class="form-control" type="text" placeholder="Search for student or parent" name="view_student_dashlet_text"
+             id="id_view_student_dashlet_text" value="" maxlength="255" autocomplete="off"
+             role="textbox" aria-autocomplete="list" aria-haspopup="true">
+      <input type="hidden" name="student" id="id_view_student_dashlet" value="">
+    </div>
+    <script>
+      $('#id_view_student_dashlet_text').yourlabsAutocomplete({
+        url: '/autocomplete/StudentLookupStudentAutocomplete/',
+        choiceSelector: 'a',
+        box: $('<span class="yourlabs-autocomplete autocomplete-lookup-student-dashlet"></span>'),
+        fixPosition: function () {
+          // Insert the autocomplete container after the input.
+          var pos = $.extend({}, this.input.position(), {
+            height: this.input.outerHeight()
+          });
+
+          this.input.parents().filter(function () {
+            return $(this).css('overflow') === 'hidden';
+          }).first().css('overflow', 'visible');
+
+          this.box.insertAfter(this.input).css(
+            { top: pos.top + pos.height, left: pos.left, 'min-width': pos.width });
+        }
+      }).input.bind('selectChoice', function (e, choice, autocomplete) {
+        window.location.href = choice.attr('href');
+      });
+    </script>
+  </form>
+
+  {# TODO #}
+  {% if false %}
+  <div style="clear:both;">
+    <a href="/studentdb/flashcard">Learn Student Names with Flashcards!</a>
+  </div>
+  {% endif %}
+
+{% endblock %}

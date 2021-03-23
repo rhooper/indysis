@@ -1,0 +1,69 @@
+{% load i18n %}
+{# Students #}
+<div class="acl-students">
+  {% if choices %}
+    {% for choice in choices %}
+      {% spaceless %}
+        <a class="block choice" href="{% url 'studentdb:view-student' choice.id %}" onClick="return false;"
+           data-id="{{ choice.id }}" data-name="{{ choice.fullname }}">
+          {% if choice.pic and choice.pic.url_70x65 %}
+            <img id="student-pic" data-largersrc="{{ choice.pic.url_530x400 }}" src="{{ choice.pic.url_70x65 }}"/>
+          {% else %}
+            <i class="fa fa-book-reader icon-user no-pic"></i>&nbsp;
+          {% endif %}
+          <span class="student-name">{{ choice.first_name }} {{ choice.last_name }}</span>
+          {% if choice.year %}
+            <br/><span class="student-year">{{ choice.year }}</span>
+          {% elif choice.afterschool_only %}
+            <br/><span class="student-year">{% trans "Afterschool" %}</span>
+          {% endif %}
+        </a>
+      {% endspaceless %}
+    {% endfor %}
+  {% else %}
+    <span class="no-results">{% trans "No students found." %}</span>
+  {% endif %}
+</div>
+
+<div class="acl-parents">
+  {% if parents %}
+    {% for choice in parents %}
+      {% if perms.studentdb.change_emergencycontact or choice.student_set.first %}
+        {% spaceless %}
+          {% if perms.studentdb.change_emergencycontact %}
+            <a class="block choice" href="{% url 'admin:studentdb_emergencycontact_change' choice.id %}"
+               onClick="return false;"
+               data-id="{{ choice.id }}" data-name="{{ choice.fullname }}">
+          {% else %}
+            <a class="block choice" href="{% url 'studentdb:view-student' choice.student_set.first.id %}"
+               onClick="return false;"
+               data-id="{{ choice.id }}" data-name="{{ choice.fullname }}">
+          {% endif %}
+        {% if choice.relationship_to_student == "Mother" %}
+          <i class="fa fa-female icon-user no-pic"></i>&nbsp;
+        {% elif choice.relationship_to_student == "Father" %}
+          <i class="fa fa-male icon-user no-pic"></i>&nbsp;
+        {% else %}
+          <i class="fa fa-user icon-user no-pic"></i>&nbsp;
+        {% endif %}
+        <span class="parent-name">{{ choice.fullname }}</span>
+        {% for student in choice.student_set.all %}
+          {% if student.is_active %}
+            <br/>
+            <i class="fa fa-book-reader icon-user no-pic"></i>&nbsp;
+            {{ student.first_name }} {{ student.last_name }}
+            {% if student.year %}
+              (<span class="student-year">{{ student.year.shortname }}</span>)
+            {% elif student.afterschool_only %}
+              (<span class="student-year">{% trans "Afterschool" %}</span>)
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        </a>
+        {% endspaceless %}
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <span class="no-results">{% trans "No contacts found." %}</span>
+  {% endif %}
+</div>

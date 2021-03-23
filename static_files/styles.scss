@@ -1,0 +1,126 @@
+body {
+  padding-top: 70px;
+  font-size: 16px;
+}
+
+#dashboard_container .dashlet header {
+  background-color: #f4f5f4;
+  color: #78a2cd;
+}
+
+#dashboard_container .dashlet header:hover {
+  background-color: #c4c4c4;
+  color: #4e84bc;
+}
+
+#dashboard_container td, #dashboard_container th {
+  padding: 2px 2px;
+}
+#dashboard_container th {
+  text-align: center;
+}
+
+.actions select {
+  -webkit-appearance: menulist;
+}
+
+.field-boxes .form-row .checkbox { padding-top: 0 }
+
+.navbar-brand > img.img-responsive {
+  display: inline-block;
+  height: 100%;
+}
+
+#filter_container {
+  background: #000;
+  height: 100%;
+}
+
+.student-name {
+  font-weight: bold;
+}
+
+
+
+/* Fix dashlet autocomplete results */
+.autocomplete-lookup-student-dashlet {
+  a.block.choice {
+    text-align: left;
+  }
+}
+
+/* Fix styles for Student contacts */
+.acl-emergency-contact-wrapper .remove {
+  float: right;
+  padding: 2px;
+}
+
+/* Page footer */
+.footer footer {
+  margin-top: 2em;
+  padding: 1em;
+}
+
+/* Don't print urls after links */
+@media print {
+  a[href]:after {
+    content: none !important;
+  }
+}
+
+/* Make dashlets shorter */
+#dashboard_container .dashlet .dashlet_body {
+  min-height: 100px;
+}
+
+
+/* Hide 'original' column from tabular admins */
+.tabular.inline-related {
+  td.original {
+    display: none;
+  }
+  th.original {
+    display: none;
+  }
+}
+
+
+/* Allow YLA box to exceed bounds of navbar collapse */
+.navbar-collapse.in {
+  overflow-y: visible;
+}
+
+@media (min-width: 768px) {
+  .yourlabs-autocomplete.autocomplete-lookup-student-dashlet, .yourlabs-autocomplete.autocomplete-lookup-student {
+    min-width: 400px;
+  }
+}
+
+.autocomplete-lookup-student-dashlet {
+  width: max-content;
+}
+
+@media (max-width: 768px) {
+  .autocomplete-lookup-student-dashlet {
+    width: 100%;
+  }
+}
+
+/* Dual column autocomplete-lookup-student */
+.autocomplete-lookup-student-dashlet .acl-parents, .autocomplete-lookup-student .acl-parents {
+  float: right;
+  width: 50%;
+  overflow: hidden;
+  padding-left: 2px;
+  border-left: 1px solid grey;
+}
+.autocomplete-lookup-student-dashlet .acl-students, .autocomplete-lookup-student .acl-students {
+  float: left;
+  width: 50%;
+  overflow: hidden;
+  border-right: 1px solid grey;
+  padding-right: 2px;
+}
+.inline-group .checkbox input {
+  margin: 3px 0 0 -18px !important
+}

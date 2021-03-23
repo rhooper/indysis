@@ -1,0 +1,146 @@
+{% extends "reportcard_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load index reportcard %}
+{% block title %}Edit Subject - {{ term.term }} - {{ grade.name }} / {{ grade.name_fr }} - {{ subject.name_en }} /
+  {{ subject.name_fr }}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reportcard:index' %}">Terms</a></li>
+    <li><a href="{% url 'reportcard:view_term' term.id %}{{ url_extra }}">{{ term }}</a></li>
+    <li>Edit Report Card</li>
+  </ol>
+{% endblock %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+  <script type="text/javascript">
+
+    $(function () {
+      setup_autosave($);
+      setup_ping($, "{% url 'reportcard:ping_subject_edit' subject.id grade.id term.id %}{{url_extra}}",
+        "{% url 'reportcard:done_subject_edit' subject.id grade.id term.id %}{{url_extra}}");
+    });
+
+  </script>
+
+{% endblock %}
+
+{% block content %}
+
+  {% include "modals.html" %}
+
+  <div class="reportcard">
+
+    <h2>{{ term.term }} - {{ term }}</h2>
+    <h3>{{ grade.name }} / {{ grade.name_fr }} - {{ subject.name_en }} / {{ subject.name_fr }}</h3>
+
+    {% if num_teachers > 1 %}
+      <ul>
+        <li class='alert info' style='font-size: 1.2em'>
+          {% trans "This subject is assigned to multiple teachers" %}:
+
+          {% for teacher in teachers %}{% if forloop.last and not forloop.first %}
+            and
+          {% elif not forloop.first %},{% endif %}{{ teacher.fullname_nocomma }}{% endfor %}
+
+          <br>
+          {% trans "Other teachers have been prevented from making conflicting edits while you work." %}
+        </li>
+      </ul>
+    {% endif %}
+
+    <form method="post" id="edit_rc" action="{{ url_extra }}">
+      {{ formset.management_form }}
+      {% csrf_token %}
+
+      {% if not valid %}
+        <div class='row'>
+        <div class='col-xs-12'>
+          <div class='alert alert-danger'>There were problems that prevented the subject marks/comments from being
+            saved.
+          </div>
+          <div class='alert alert-danger'>Correct the errors highlighted below.</div>
+        </div>
+      {% endif %}
+
+      <table class='table table-striped table-bordered'>
+        <thead>
+        <tr>
+          <th>
+            Student /<br>
+            Élève
+          </th>
+          {% if subject.graded %}
+            <th>
+              Grade /<br>
+              Note
+            </th>
+          {% endif %}
+          {% for strand in subject.strands %}
+            <th style='width: 130px'>
+              {% enfr strand "text" %}
+            </th>
+          {% endfor %}
+          {% if subject.comments_area %}
+            <th>
+              Comments /<br>
+              Commentaires
+            </th>
+          {% endif %}
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for student in students %}
+
+          <tr>
+            <td class="student-name">
+              {{ student }}
+            </td>
+            {% if subject.graded %}
+              <td class="term">
+                {% include "fragments/_input_grade.html" with item=subject section=subject.section element_to_form=student_map|index:student instance_errors=student_errors|index:student %}
+              </td>
+            {% endif %}
+            {% for strand in subject.strands %}
+              <td class="term">
+                {% include "fragments/_input_grade.html" with item=strand section=strand.subject.section element_to_form=student_map|index:student instance_errors=student_errors|index:student %}
+              </td>
+            {% endfor %}
+            <td class="comments">
+            {% if subject.comments_area %}
+                {{ student_map|index:student|index:subject|index:"comment" }}
+                {% if student_errors|index:student|index:subject|indexnone:"comment" %}
+                  <div>{% for err in student_errors|index:student|index:subject|index:"comment" %}
+                    <ul class='alert warning'>{{ err }}</ul>{% endfor %}</div>
+                {% endif %}
+            {% endif %}
+            </td>
+          </tr>
+
+        {% endfor %}
+
+        {% for form in formset %}
+          {% for field in form.hidden_fields %}
+            {{ field }}
+          {% endfor %}
+        {% endfor %}
+
+        </tbody>
+      </table>
+
+      <input type="submit" class="btn btn-default" name='save' value="Save"  data-toggle="modal" data-target="#save"/>
+      <input type="submit" class="btn btn-info" name='save_edit' value="Save &amp; Keep Editing"  data-toggle="modal" data-target="#save"/>
+
+      </table>
+    </form>
+  </div>
+
+
+{% endblock %}

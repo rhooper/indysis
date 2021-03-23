@@ -1,0 +1,14 @@
+<!-- Just plain HTML, no admin stuff. Useful for ajax -->
+{% if main_heading %}<h1>{{ main_heading }}</h1>{% endif %}
+{% if lists %}
+  {% for list in lists %}
+    <h2>{{ list.heading }}</h2>
+    <ul>
+      {% for item in list.items %}
+        <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+{% endif %}
+{% if afterword %}
+  <hr/><p>{{ afterword|safe }}</p>{% endif %}

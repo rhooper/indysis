@@ -1,0 +1,30 @@
+{% extends "sis_base.html" %}
+{% load raven %}
+
+{% block title %}Error{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+
+    <h1>{{ heading|default:"Error" }}</h1>
+
+    <p><strong>{{ message }}</strong></p>
+
+    <p>{{ additional }}</p>
+
+    {% if request.sentry.id %}
+      <p>If you need assistance, you may reference this error as <strong>{{ request.sentry.id }}</strong>.</p>
+
+      <script>
+        Raven.showReportDialog({
+          eventId: '{{ request.sentry.id }}',
+
+          // use the public DSN (dont include your secret!)
+          dsn: '{% sentry_public_dsn 'https' %}'
+        });
+      </script>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

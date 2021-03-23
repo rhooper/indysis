@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+  <script type="text/javascript" src="/admin/jsi18n/"></script>
+  {{ formset.media }}
+{% endblock %}
+
+{% block content %}
+  <h1> {{ subtitle }} </h1>
+  {% if msg %} <p>{{ msg }}</p><br/> {% endif %}
+
+
+  <ol>
+    {% for row in item_list %}
+      <li>{{ row }}</li>
+    {% endfor %}
+  </ol>
+
+  <form method="post" enctype="multipart/form-data" action="">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" name="confirm" value="Yes"/>
+  </form>
+{% endblock %}
+

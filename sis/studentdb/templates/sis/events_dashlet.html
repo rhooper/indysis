@@ -1,0 +1,49 @@
+{% extends "responsive_dashboard/dashlet.html" %}
+
+{% block dashlet_body %}
+  {% for alert in news_alerts %}
+    <div class="row">
+      <h4>{{ alert }}</h4>
+    </div>
+  {% endfor %}
+  <div class="row">
+    <div class="col-xs-12">
+      {% if school_year %}
+        Current School Year:
+        {% if perms.studentdb.change_schoolyear %}
+          <a href="{% url 'admin:studentdb_schoolyear_change' school_year.id %}">{{ school_year }}</a>
+        {% else %}
+          {{ school_year }}
+        {% endif %}
+      {% else %}
+        No School Year is active.
+        {% if perms.studentdb.change_schoolyear %}
+          Would you like to <a href="{% url 'admin:studentdb_schoolyear_changelist' %}">change</a> it?
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      {% if term %}
+        It is
+        {% if perms.schedule.change_term %}
+          <a href="{% url 'admin:studentdb_term_change' term.id %}">{{ term }}</a>
+        {% else %}
+          {{ term }}
+        {% endif %}
+        which ends on {{ term.end_date }}.
+      {% else %}
+        There is no current Term.
+        {% if next_term %}
+          {{ next_term }} starts on {{ next_term.start_date }}
+        {% else %}
+          There is no future Term.
+          {% if perms.schedule.change_term %}
+            Would you like to <a href="{% url 'admin:studentdb_term_changelist' %}">schedule a new one</a>?
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% load index  i18n %}
+
+<!-- Previous terms -->
+{% for t in terms %}
+  <th>
+    {% trans "Term" %} {{ t }}
+    {% if section.gradingscheme_label %}
+      <br>{{ section.gradingscheme_label }}
+    {% endif %}
+  </th>
+  <th>
+    {% trans "Term" %}&nbsp;{{ t }}
+    {% if section.second_gradingscheme %}
+      <br>{{ section.second_gradingscheme_label }}
+    {% endif %}
+  </th>
+{% endfor %}
+<!-- Current term -->
+<th>
+  <h4>{% trans "Term" %} {{ term.displabel }}</h4>
+</th>

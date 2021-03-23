@@ -1,0 +1,246 @@
+{% extends "sis_base.html" %}
+
+{% block extrahead %}
+  <script type="text/javascript">
+    $(function () {
+      $('.volhr a').click(function () {
+        var school_year = $('#vh_sy').val();
+        window.location.href = $(this).attr('href') + '?school_year=' + school_year;
+        return false;
+      });
+      $('.asp a').click(function () {
+        var month = $('#asp_mo').val();
+        window.location.href = $(this).attr('href') + '?month=' + month;
+        return false;
+      });
+      $('.bsp a').click(function () {
+        var month = $('#bsp_mo').val();
+        window.location.href = $(this).attr('href') + '?month=' + month;
+        return false;
+      });
+    });
+  </script>
+  <style type="text/css">
+    h2 {
+      font-size: 1.5em;
+    }
+
+    h3 {
+      font-size: 1.2em;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div>
+
+    <h2>Student Reports</h2>
+
+    <h3>Class Roster</h3>
+    <a class='btn btn-primary' href='{% url 'studentdb:class_roster' 0 %}'>All Grades</a>
+    {% for grade in grades %}
+      <a class='btn btn-success' href='{% url 'studentdb:class_roster' grade.id %}'>{{ grade.shortname }}</a>
+    {% endfor %}
+
+    <h3>Birthdays</h3>
+
+    <a class='btn btn-primary' href='{% url 'studentdb:birthdays' 0 %}'>By Month</a>
+    <a class='btn btn-primary' href='{% url 'studentdb:birthdays' 'by_grade' %}'>By Grade</a>
+    {% for grade in grades %}
+      <a class='btn btn-success' href='{% url 'studentdb:birthdays' grade.id %}'>{{ grade.shortname }}</a>
+    {% endfor %}
+
+    <h3>Parent Contact List</h3>
+
+    <a class='btn btn-primary' href='{% url 'studentdb:parents' 0 %}'>All Parents</a>
+    <a class='btn btn-primary' href='{% url 'studentdb:parents' 'by_grade' %}'>By Grade</a>
+    {% for grade in grades %}
+      <a class='btn btn-success' href='{% url 'studentdb:parents' grade.id %}'>{{ grade.shortname }}</a>
+    {% endfor %}
+
+    <h3>Siblings</h3>
+
+    <a class='btn btn-primary' href='{% url 'studentdb:siblings' %}'>All Siblings</a>
+
+
+    <h3>Email Book</h3>
+
+    <a class='btn btn-primary' href='{% url 'studentdb:parents' 0 %}?emails=1'>All Parents</a>
+    <a class='btn btn-primary' href='{% url 'studentdb:parents' 'by_grade' %}?emails=1'>By Grade</a>
+    {% for grade in grades %}
+      <a class='btn btn-success' href='{% url 'studentdb:parents' grade.id %}?emails=1'>{{ grade.shortname }}</a>
+    {% endfor %}
+
+    <h3>Allergies &amp; Health Concerns</h3>
+
+    <a class='btn btn-primary' href='{% url 'studentdb:healthconcerns' 0 %}'>All Grades</a>
+    {% for grade in grades %}
+      <a class='btn btn-success' href='{% url 'studentdb:healthconcerns' grade.id %}'>{{ grade.shortname }}</a>
+      </a>
+    {% endfor %}
+  </div>
+
+  <h3>Photo Permission</h3>
+
+  <a class='btn btn-primary' href='{% url 'studentdb:photopermission' 0 %}'>All Grades</a>
+  {% for grade in grades %}
+    <a class='btn btn-success'  href='{% url 'studentdb:photopermission' grade.id %}'>{{ grade.shortname }}</a>
+  {% endfor %}
+
+  <h3>Health Cards</h3>
+
+  <a class='btn btn-primary' href='{% url 'studentdb:healthcards' 0 %}'>All Grades</a>
+  {% for grade in grades %}
+    <a class='btn btn-success'  href='{% url 'studentdb:healthcards' grade.id %}'>{{ grade.shortname }}</a>
+  {% endfor %}
+
+  <h3>Paper Attendance</h3>
+  <a class='btn btn-primary' href='{% url 'studentdb:class_roster' 0 %}?attendance=1'>All Grades</a>
+  {% for grade in grades %}
+    <a class='btn btn-success' 
+        href='{% url 'studentdb:class_roster' grade.id %}?attendance=1'>{{ grade.shortname }}</a>
+  {% endfor %}
+
+  <h3>Afterschool Attendance</h3>
+  <a class='btn btn-primary' href='{% url 'studentdb:afterschool_attendance' 0 %}'>All Grades</a>
+  {% for grade in grades %}
+    <a class='btn btn-success' 
+        href='{% url 'studentdb:afterschool_attendance' grade.id %}'>{{ grade.shortname }}</a>
+  {% endfor %}
+
+  <hr>
+
+  {% if perms.studentdb.view_afterschoolprogramattendance %}
+    <h3>Afterschool Usage</h3>
+    <div class='asp'>
+      {% if months %}
+        <p>Month: <select id='asp_mo' name='month'>
+          {% for mo in months %}
+            <option value='{{ mo.0 }}' {% if mo.0 == cur_month %} selected{% endif %}>{{ mo.1 }}</option>
+          {% endfor %}
+        </select>
+        </p>
+      {% endif %}
+      <a class='btn btn-primary' href='{% url 'studentdb:afterschool_usage' %}'>View</a>
+    </div>
+  {% endif %}
+
+
+  {% if perms.studentdb.view_beforeschoolprogramattendance %}
+    <h3>Beforeschool Usage</h3>
+    <div class='bsp'>
+      {% if months %}
+        <p>Month: <select id='bsp_mo' name='month'>
+          {% for mo in months %}
+            <option value='{{ mo.0 }}' {% if mo.0 == cur_month %} selected{% endif %}>{{ mo.1 }}</option>
+          {% endfor %}
+        </select>
+        </p>
+      {% endif %}
+      <a class='btn btn-primary' href='{% url 'studentdb:beforeschool_usage' %}'>View</a>
+    </div>
+  {% endif %}
+
+
+  <hr>
+
+  <h2>Food Orders</h2>
+  {% for event in events %}
+    <h5>{{ event.name }}</h5>
+    <a class='btn btn-primary' href='{% url 'studentdb:foodorders' event.id 'school' %}'>School</a>
+    <a class='btn btn-primary' href='{% url 'studentdb:foodorders' event.id 'all' %}'>By Grade</a>
+    {% for grade in grades %}
+      <a class='btn btn-success' href='{% url 'studentdb:foodorders' event.id grade.id %}'>{{ grade.shortname }}</a>
+    {% endfor %}
+
+    {% if 'izza' in event.name %}
+      <a class='btn btn-primary' href='{% url 'studentdb:foodorders' event.id 'all' %}?keyword=milk'>By Grade (Milk)</a>
+      <a class='btn btn-primary' href='{% url 'studentdb:foodorders' event.id 'all' %}?keyword=pizza'>By Grade
+        (Pizza)</a>
+    {% endif %}
+
+  {% endfor %}
+
+  <hr>
+
+
+  <h3>Volunteer Hours</h3>
+  <div class='volhr'>
+    <p>School Year: <select id='vh_sy' name='school_year'>
+      {% for sy in schoolyears %}
+        <option value='{{ sy.id }}' {% if sy.active %} selected{% endif %}>{{ sy.name }}</option>
+      {% endfor %}
+    </select>
+    </p>
+    <a class='btn btn-primary' href='{% url 'studentdb:volunteerhours' 0 %}'>School</a>
+    {% for grade in grades %}
+      <a class='btn btn-success' href='{% url 'studentdb:volunteerhours' grade.id %}'>{{ grade.shortname }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <hr>
+
+  <h2>Labels</h2>
+
+  <p>Avery 5161 labels.</p>
+
+  {% for labels in labelscales %}
+    <div class='{{ labels.0 }}-sized' style='{% if labels.0 != 'office' %}display: none{% endif %}'>
+
+      <h3>Parents</h3>
+
+      <a class='btn btn-primary' href='{% url 'studentdb:parent_labels' 0 %}?{{ labels.1 }}'>All Grades</a>
+      {% for grade in grades %}
+        <a class='btn btn-success'
+           href='{% url 'studentdb:parent_labels' grade.id %}?{{ labels.1 }}'>{{ grade.shortname }}</a>
+      {% endfor %}
+
+      <h3>Students</h3>
+
+      <p>With Grades</p>
+      <a class='btn btn-primary' href='{% url 'studentdb:student_labels' 0 %}?{{ labels.1 }}'>All Grades</a>
+      {% for grade in grades %}
+        <a class='btn btn-success'
+            href='{% url 'studentdb:student_labels' grade.id %}?{{ labels.1 }}'>{{ grade.shortname }}</a>
+      {% endfor %}
+
+      <p>Without Grades</p>
+
+      <a class='btn btn-primary'
+          href='{% url 'studentdb:student_labels' 0 %}?{{ labels.1 }}{% if labels.1 %}&amp;{% endif %}no_grades=1'>All
+        Grades</a>
+      {% for grade in grades %}
+        <a class='btn btn-success' href='{% url 'studentdb:student_labels' grade.id %}?
+            {{ labels.1 }}{% if labels.1 %}&amp;{% endif %};no_grades=1'>{{ grade.shortname }}</a>
+      {% endfor %}
+
+    </div>
+  {% endfor %}
+
+  <hr>
+
+  <h2>Student Information Sheets</h2>
+
+  <a class='btn btn-primary' href='{% url 'studentdb:student_information_pdf' %}'>Student Information Sheet PDF</a>
+
+  <h2>Exports for other systems</h2>
+
+  <h3>Students/Parents</h3>
+
+  <p>Generate A CSV containing student name, grade, parent names, addresses, main phone.</p>
+
+  <a class='btn btn-primary' href='{% url 'studentdb:parents_export' %}'>Student Export</a>
+
+
+  <h3>Gerri</h3>
+
+  <p>Generate A CSV containing student information for Ottawa Public Health report.</p>
+
+  <a class='btn btn-primary' href='{% url 'studentdb:gerri_csv' %}'>Gerri Export</a>
+
+  <p>&nbsp;</p>
+
+
+{% endblock %}

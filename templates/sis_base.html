@@ -1,0 +1,128 @@
+{% load static from staticfiles %}
+{% load raven compress i18n %}
+{% load bootstrap3 %}
+
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% block head %}
+
+    {% block blockbots %}
+      <meta name="robots" content="NONE,NOARCHIVE"/>{% endblock %}
+
+    <title>{% block title %}{% trans "Database" %}{% endblock %} | {{ config.SCHOOL_NAME }}</title>
+
+    {% include "partials/favicons-etc.html" %}
+
+    {% block stylesheets %}
+      <link href='//fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic,700,700italic'
+            rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+            integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+      {% bootstrap_css %}
+      <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/cupertino/jquery-ui.css"/>
+    {% endblock stylesheets %}
+
+    {% compress css %}
+      <link type="text/x-scss" href="{% static 'styles.scss' %}" rel="stylesheet" charset="utf-8"/>
+      <link rel="stylesheet" type="text/css" href="{% static "css/jquery.multiselect.css" %}"/>
+      <link rel="stylesheet" type="text/css" href="{% static "css/jquery.multiselect.filter.css" %}"/>
+      <link rel="stylesheet" type="text/css"
+            href="{% static "jquery.uix.multiselect/jquery.uix.multiselect.css" %}"/>
+    {% endcompress %}
+
+    {% block javascripts %}
+
+      {% if settings.RAVEN_DSN %}
+        <script type="text/javascript" src="https://cdn.ravenjs.com/3.24.1/raven.min.js"></script>
+        <script>Raven.config('{% sentry_public_dsn 'https' %}').install();</script>
+      {% endif %}
+      {% bootstrap_javascript jquery=1 %}
+      <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+      {% include 'autocomplete_light/static.html' %}
+
+      <script type="text/javascript" src="{% static "js/jquery.multiselect.js" %}"></script>
+      <script type="text/javascript" src="{% static "js/jquery.multiselect.filter.js" %}"></script>
+      <script>
+        $.fn.simple_multiselect = $.fn.multiselect;
+        delete $.fn.multiselect;
+      </script>
+      <script src="{% static "js/sis.init.js" %}"></script>
+    {% endblock javascripts %}
+
+    {% include "partials/analytics.html" %}
+
+  {% endblock head %}
+
+  {% block extrahead %}
+  {% endblock extrahead %}
+</head>
+<body
+    class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}{% if LANGUAGE_BIDI %} rtl{% endif %} no-sidebar"
+    data-admin-utc-offset="{% now "Z" %}">
+
+{% block extrabodytop %}
+{% endblock %}
+
+{% block nav %}
+  {% include "nav.html" %}
+{% endblock %}
+
+<!-- HEADER -->
+{% block header %}
+<header class="hidden-print {% block header-class %}{% endblock %}">
+  {% if not is_popup %}
+
+    {% block nav_page_specific %}
+      {% block breadcrumbs %}
+      {% endblock %}
+    {% endblock %}
+
+  {% endif %}
+</header>
+{% endblock %}
+
+<!-- CONTENT -->
+<div class="{% block content-class %}container-fluid{% endblock %}">
+
+  <!-- MESSAGES -->
+  {% block messages %}
+    {% bootstrap_messages %}
+  {% endblock %}
+
+  {% block bigcontent %}
+    <!-- CONTENT TITLE -->
+    <header>
+      {% block pretitle %}{% endblock %}
+      {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+      {% block object-tools %}{% endblock %}
+    </header>
+
+
+    <!-- CONTENT-CONTAINER -->
+    <div>
+      {% block content %}
+        {{ content }}
+        {% block filters %}{% endblock %}
+      {% endblock %}
+    </div>
+  {% endblock %}
+
+
+</div>
+
+
+<!-- FOOTER -->
+{% block footer %}{% endblock %}
+
+<div class="footer hidden-print">
+{% include "partials/footer.html" %}
+</div>
+
+</body>
+</html>

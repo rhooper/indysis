@@ -1,0 +1,57 @@
+{% extends "sis_base.html" %}
+<!-- LOADING -->
+{% load i18n admin_modify %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'attendance:daily_attendance' %}">Attendance</a></li>
+    <li>Attendance Exceptions</li>
+  </ol>
+{% endblock %}
+
+{% block title %}{% trans "Attendance Exceptions" %}{% endblock %}
+
+{% block content %}
+
+  <div class="row">
+    <div class="col-md-9 col-xs-12"><h4>Date: {{ date|date:"l F jS, Y" }}</h4></div>
+    <div class="col-md-1 col-xs-4 hidden-print"><h4><a class="btn btn-primary" href="{{ request.path }}?date={{ yesterday|date:"Y-m-d" }}">{% trans "Yesterday" %}</a></h4></div>
+    <div class="col-md-1 col-xs-4 hidden-print"><h4>{% if today %}<a class="btn btn-primary" href="{{ request.path }}?&date={{ today|date:"Y-m-d" }}">{% trans "Today" %}</a>{% endif %}</h4></div>
+    <div class="col-md-1 col-xs-4 hidden-print"><h4><a class="btn btn-primary" href="{{ request.path }}?&date={{ tomorrow|date:"Y-m-d" }}">{% trans "Tomorrow" %}</a></h4></div>
+  </div>
+
+  {% if perms.attendance.change_studentattendance %}
+    {# TODO date__gte isn't working (filters are not) #}
+    <p class="hidden-print"><a href="/admin/attendance/studentattendance/?date__gte={{ date|date:"m/d/Y" }}"> Make corrections </a></p>
+  {% endif %}
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Student</th>
+      <th>Status</th>
+      <th>Notes</th>
+      <th>Grade</th>
+      <th>Recorded By</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for log in logs %}
+      <tr>
+        <td><a href='{% url "studentdb:view-student" log.student.id %}' target='_blank'>{{ log.student }}</a></td>
+        <td><a href='/admin/attendance/studentattendance/{{ log.id }}'>{{ log.status }}</a> {% if log.time %} (
+          {{ log.time }}){% endif %}</td>
+        <td>{{ log.notes }}</td>
+        <td>{{ log.student.year }}</td>
+        <td>{% if log.recorded_by.get_full_name %}{{ log.recorded_by.get_full_name }}{% else %}{{ log.recorded_by }}{% endif %}</td>
+      </tr>
+    {% empty %}
+      <tr>
+      <td colspan='4'>None reported</td>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}
+

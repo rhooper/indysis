@@ -1,0 +1,36 @@
+{% extends "sis_base.html" %}
+{% load i18n bootstrap static %}
+
+{% block title %}{% trans "Review and Test - Emergency Broadcast" %}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">{% trans "Home" %}</a></li>
+    <li>{% trans "Emergency Broadcast" %}</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>{% trans "Review and Test - Emergency Broadcast" %}</h1>
+
+  {% include "broadcast/_status.html" %}
+
+  <div class="row col-xs-12">
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-3">
+        {{ form|bootstrap }}
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Send Test</button>
+  </form>
+  </div>
+
+  {% include "broadcast/_table.html" %}
+
+{% endblock %}

@@ -1,0 +1,335 @@
+{% extends "reportcard_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load index bootstrap %}
+{% block title %}{% trans "Edit Report Card" %} - {{ term.term }} - {{ student }}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+    <li><a href="/">{% trans "Home" %}</a></li>
+    <li><a href="{% url 'reportcard:index' %}">{% trans "Terms" %}</a></li>
+    <li><a href="{% url 'reportcard:view_term' term.id %}{{ url_extra }}">{{ term }}</a></li>
+    <li>{% trans "Edit Report Card" %}</li>
+  </ol>
+
+{% endblock %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+  <script type="text/javascript">
+
+    $(function () {
+      setup_autosave($);
+      setup_ping($, "{% url 'reportcard:ping_student_edit' student.id term.id %}{{url_extra}}",
+        "{% url 'reportcard:done_student_edit' student.id term.id %}{{url_extra}}");
+    });
+
+  </script>
+
+{% endblock %}
+
+
+{% block content %}
+
+  {% include "modals.html" %}
+
+  <div class="reportcard">
+
+    <h1>{{ term.term }} - {{ student.year }}: {{ student }}</h1>
+
+
+    <div class='row'>
+      <div class='col-xs-1'>
+        <h4>Attendance</h4>
+      </div>
+      <div class='col-xs-3'>
+        <div class='row'>
+          <div class='col-xs-12'><STRONG>Term {{ term.no }}</STRONG></div>
+        </div>
+        <div class='row'>
+          <div class='col-xs-3'>
+            Late:
+          </div>
+          <div class='col-xs-3'>
+            {{ term_lates }}
+          </div>
+          <div class='col-xs-3'>
+            Absent:
+          </div>
+          <div calss='col-xs-3'>
+            {{ term_absences }}
+          </div>
+        </div>
+      </div>
+
+      <div class='col-xs-3'>
+        <div class='row'>
+          <div class='col-xs-12'><STRONG>Year</STRONG></div>
+        </div>
+        <div class='row'>
+          <div class='col-xs-3'>
+            Late:
+          </div>
+          <div class='col-xs-3'>
+            {{ year_lates }}
+          </div>
+          <div class='col-xs-3'>
+            Absent:
+          </div>
+          <div calss='col-xs-3'>
+            {{ year_absences }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if not valid %}
+      <div class='row'>
+        <div class='{{ maincolsize }}'>
+          <li class='alert warning'>There were problems that prevented the student's report card from being saved.</li>
+          <li class='alert warning'>Correct the errors highlighted below.</li>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if False and completed %}
+      <div class='row'>
+        <div class='col-xs-8'>
+          <p><strong class='alert success' style='font-size: 1.2em'>All marks and comments are entered.</strong></p>
+        </div>
+      </div>
+    {% endif %}
+
+    <form method="post" id="edit_rc" action="{{ url_extra }}">
+      {{ formset.management_form }}
+      {% csrf_token %}
+
+      {% for section in template.sections %}
+
+        <!-- Start of Section -->
+        {% if section_access|index:section %}
+
+          <div class='section'>
+
+          {{ element_to_form|index:section|index:"id" }}
+
+          {% if section.heading %}
+            <div class='row'>
+              <div class='col-xs-6'>
+                <h2>{{ section.heading_fr }}</h2>
+              </div>
+              {% if section.heading_fr != section.heading_en %}
+                <div class='col-xs-6'>
+                  <h2>{{ section.heading_en }}</h2>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if section.text %}
+            <div class='row'>
+              <div class='col-xs-6'>
+                <p>{{ section.text_fr }}</p>
+              </div>
+              {% if section.text_fr != section.text_en %}
+                <div class='col-xs-6'>
+                  <p>{{ section.text_en }}</p>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+
+          <!-- Subject Loop -->
+          {% for subject in section.subjects %}
+
+            {% if subject_access|index:subject %}
+
+              {{ element_to_form|index:subject|index:"id" }}
+
+              <table class='table table-striped'>
+                <tbody>
+
+                <!-- Subject Heading -->
+                <tr>
+                  <th>
+                    <h3>{{ subject.entry_form_label }}</h3>
+                  </th>
+
+                  {% include "fragments/edit_student_term_headings.html" %}
+
+                  <th></th>
+
+                </tr>
+
+                {% if instance_errors|index:subject|indexnone:"__all__" %}
+                  <tr>
+                    <td colspan="{{ terms|length|add:4 }}">
+                      {% for err in instance_errors|index:subject|index:"__all__" %}
+                        <div class='alert alert-danger' role="alert">{{ err }}</div>
+                      {% endfor %}
+                    </td>
+                  </tr>
+                {% endif %}
+
+                <!-- Subject mark entry -->
+                <tr>
+                  <td class="subject-strand">
+                    <!-- Subject text -->
+                    {{ subject.entry_form_text }}
+                  </td>
+
+                  <!-- Past marks -->
+                  {% include "fragments/edit_student_past_terms.html" with item=subject %}
+
+                  {% if not subject.graded %}
+                    <td class="term"></td>
+                  {% else %}
+                    <td class='term'>
+                      {% include "fragments/_input_grade.html" with item=subject %}
+                    </td>
+                  {% endif %}
+
+                  <!-- Inline comment area for subject with no strands -->
+                  <td class="comments">
+                  {% if not subject.strands and subject.comments_area %}
+                      {% include "fragments/_input_comment.html" with item=subject %}
+                  {% endif %}
+                  </td>
+
+                </tr>
+                <!-- End Subject -->
+
+                <!-- Strands -->
+
+                {% for strand in subject.strands %}
+
+                  {{ element_to_form|index:strand|index:"id" }}
+
+                  {% if instance_errors|index:strand|indexnone:"__all__" %}
+                    <tr>
+                      <td colspan="{{ terms|length|add:4 }}">
+                        {% for err in instance_errors|index:strand|index:"__all__" %}
+                          <div class='alert alert-danger'>{{ err }}</div>
+                        {% endfor %}
+                      </td>
+                    </tr>
+                  {% endif %}
+
+                  <tr>
+                    <th class="subject-strand">{{ strand.entry_form_label }}</th>
+
+                    {% include "fragments/edit_student_past_terms.html" with item=strand %}
+
+                    {% if not strand.graded %}
+                      <td class="term"></td>
+                    {% else %}
+                      <td class='term'>
+                        {% include "fragments/_input_grade.html" with item=strand %}
+                      </td>
+                    {% endif %}
+                    <td class="comments"></td>
+                  </tr>
+
+                {% endfor %}
+
+                <!-- End Strands -->
+
+                <!-- Comment area for subject with no strands -->
+                {% if subject.strands and subject.comments_area %}
+                <tr>
+                  <td colspan="2">
+                    <!-- TODO: Don't collapse past terms? -->
+                    {% include "fragments/_input_comment.html" with item=subject%}
+                  </td>
+                </tr>
+                {% endif %}
+
+
+              </tbody>
+            </table>
+
+            {% endif %}
+          {% endfor %}
+
+        <!-- //Subjects -->
+
+        {% if section_access|index:section %}
+
+          {% if section.comments_area %}
+            {% if section.comments_heading %}
+              <div class='row section_comments_area'>
+                <div class='col-xs-6'>
+                  <h3>{{ section.comments_heading_en }}</h3>
+                </div>
+                {% if section.comments_heading_fr != section.comments_heading_en %}
+                  <div class='col-xs-6'>
+                    <h3>{{ section.comments_heading_fr }}</h3>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <div class='row'>
+              <div class='col-xs-12 field'>
+                {{ element_to_form|index:section|index:"comment" }}
+                {% if instance_errors|index:section|indexnone:"comment" %}
+                  <div class='col-xs-8'>{% for err in instance_errors|index:section|index:"comment" %}
+                    <ul class='alert warning'>{{ err }}</ul>{% endfor %}</div>
+                {% endif %}
+
+                {% if terms %}
+                  <div class='prev-term'>Previous terms:
+                    {% for t in terms %}
+                      <div>
+                        <a href='#' class="btn btn-primary toggle" gumby-trigger="#comment-{{ section.id }}-{{ t }}">Term {{ t }}</a>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  {% for t in terms %}
+                    <div class='row'>
+                      <div class='col-xs-12'>
+                        <div class="drawer" id="comment-{{ section.id }}-{{ t }}">
+                          <p>
+                            <u>Term {{ t }}</u>
+                          </p>
+                          <p>
+                            {% if element_to_past|index:t|indexnone:section %}
+                              {{ element_to_past|index:t|index:section|attr:"comment" }}
+                            {% else %}
+                              n/a
+                            {% endif %}
+                          </p>
+                          <p><a href='#' class='switch' gumby-trigger="|#comment-{{ section.id }}-{{ t }}">Close</a></p>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+
+
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+
+        </table><!-- // section -->
+
+          {% if not forloop.last %}
+            <div class='controls' style='padding: 2em 0'>
+              <input class="btn btn-default" type="submit" name='save_edit' value="Save" data-toggle="modal" data-target="#save" />
+            </div>
+          {% endif %}
+
+
+        {% endif %}
+      {% endfor %}
+
+      <div class='controls' style='padding: 2em 0'>
+        <input class="btn btn-primary" type="submit" name='save' value="Save &amp; edit another student"  data-toggle="modal" data-target="#save"/>
+        <input class="btn btn-info" type="submit" name='save_review' value="Save &amp; review"  data-toggle="modal" data-target="#save"/>
+      </div>
+    </form>
+
+{% endblock %}

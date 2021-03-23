@@ -1,0 +1,180 @@
+{% extends "reportcard_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load index rc_legacy %}
+
+{% block title %}Report Cards - {{ term.term }}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reportcard:index' %}">Terms</a></li>
+    <li>{{ term }}</li>
+  </ol>
+{% endblock %}
+
+{% block content %}
+
+  <div>
+
+    <h3>{% trans "Report Cards" %} - {{ term }}</h3>
+
+    {% if superuser %}
+      <div class="panel panel-default">
+        <div class="panel-heading">Admin</div>
+        <div class="panel-body">
+          {% trans "Select teacher" %}
+          <div class="btn-group btn-group-sm" role="group" aria-label="Teachers">
+            {% for teach in teachers %}
+              <a class="btn btn-sm {% if teacher.id == teach.id %}btn-primary{% else %}btn-default{% endif %}"
+                 href='?teacher_id={{ teach.id }}'>{{ teach.fullname_nocomma }}</a>
+            {% endfor %}
+          </div>
+          <p>
+            <a href='{% url 'reportcard:term_admin' term.id %}'>{% trans "Go to Term Admin" %}</a>
+          </p>
+        </div>
+
+      </div>
+
+    {% endif %}
+
+
+    <div class='row reviews'>
+      {% if term.submission_deadline %}
+        <div class='col-xs-2'>
+          <strong>Due to Administration</strong>
+        </div>
+        <div class='col-xs-2'>
+          {{ term.submission_deadline }}
+          {{ term.submission_deadline|countdown }}
+        </div>
+      {% endif %}
+      {% if term.review_deadline %}
+        <div class='col-xs-2'>
+          <strong>Revision Deadline</strong>
+        </div>
+        <div class='col-xs-2'>
+          {{ term.review_deadline }}
+          {{ term.review_deadline|countdown }}
+        </div>
+      {% endif %}
+      {% if term.delivery_date %}
+        <div class='col-xs-2'>
+          <strong>Delivery Date</strong>
+        </div>
+        <div class='col-xs-2'>
+          {{ term.delivery_date }}
+          {{ term.delivery_date|countdown }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if not term.is_open %}
+      <h4 class="">Submissions are closed</h4>
+    {% endif %}
+
+    <div class="row">
+
+      <div class="col-xs-6"><!-- Students -->
+
+        <h4>By-Student</h4>
+        <p>Edit report cards on a per-student basis. Includes sections entered by homeroom teachers, such as Learning
+          Skills and Work Habits as well as any subjects taught by you.</p>
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th>Grade</th>
+            <th colspan='2'>Student</th>
+            <th>Status</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for student in students %}
+            <tr class="{% if False and student.completed %}filled{% endif %}">
+              <td>{{ student.student.year.shortname }}</td>
+              {% if not teacher or not term.is_open%}
+                <td><a href='
+
+                    {% url 'reportcard:view_student' student.student.id term.id %}{{ url_extra }}'>{{ student.student.fullname }}</a>
+                </td>
+              {% else %}
+                <td><a href='
+
+                    {% url 'reportcard:edit_student' student.student.id term.id %}{{ url_extra }}'>{{ student.student.fullname }}</a>
+                  <i class="glyphicon glyphicon-pencil"></i></td>
+              {% endif %}
+              <td>
+                <a data-tooltip='Full formatted report card in PDF form' target='_blank'
+                   href='{% url 'reportcard:generate_student' student.student.id term.id student.student.rc_filename %}'>Print
+                  Preview</a>
+              </td>
+
+              <td>
+                {% if False and student.completed %}
+                  <span class="glyphicon glyphicon-ok" style='color: green'></span>
+                {% endif %}
+                {% if not student.editable %}
+                  <span class="glyphicon glyphicon-lock"></span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan=2>None</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+          <tfoot>
+          <tr>
+            <th colspan="3">TOTAL</th>
+            <th>{{ students|length }}</th>
+          </tr>
+          </tfoot>
+        </table>
+
+      </div><!-- /Students -->
+
+      <div class="col-xs-6"><!-- Subjects -->
+
+        <h4>By-Subject</h4>
+        <p>Enter grades and comments on a per-subject / per-grade basis. Useful for quickly entering marks from a
+          gradebook, or reviewing marks and comments for a whole class at once.</p>
+
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th>Grade</th>
+            <th>Subject</th>
+            <th>Filled</th>
+          </tr>
+          </thead>
+          {% for subject in subject_info %}
+            <tr class="{% if False and subject.filled == subject.num_students %}filled{% endif %}">
+              <td>{{ subject.grade }}</td>
+              <td>
+                {% if term.is_open %}
+                  <a href='
+
+                      {% url 'reportcard:edit_subject' subject.id subject.grade_id term.id %}{{ url_extra }}'>{{ subject.name }}</a>
+                  <i class="glyphicon glyphicon-pencil"></i>
+                {% else %}
+                  {{ subject.name }}
+                {% endif %}
+              </td>
+              <td>{{ subject.filled }} / {{ subject.num_students }} students
+                {% if subject.filled == subject.num_students %}
+                  <span class="glyphicon glyphicon-ok" style='color: green'></span>
+                {% endif %}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan=3>None</td>
+            </tr>
+          {% endfor %}
+        </table>
+
+      </div><!-- /Subjects -->
+    </div>
+
+{% endblock %}

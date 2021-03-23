@@ -1,0 +1,15 @@
+{% extends "sis_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block content %}
+
+  <p>Gecoding addresses of parents for Google Map. This may take a moment.</p>
+
+  <script>
+    setTimeout(function () {
+      window.location.href = '{% url "studentdb:student_map" %}';
+    }, 1000);
+  </script>
+
+{% endblock %}

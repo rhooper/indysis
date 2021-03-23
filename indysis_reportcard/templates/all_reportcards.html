@@ -1,0 +1,79 @@
+{% extends "reportcard_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load index %}
+
+{% block title %}Report Cards - Batch Generate - {{ term.term }}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reportcard:index' %}">Terms</a></li>
+    <li><a href="{% url 'reportcard:term_admin' term.id %}">{{ term }}</a></li>
+    <li>Batch Generate</li>
+  </ol>
+{% endblock %}
+
+{% block content %}
+
+  <style type="text/css">
+    .reviews {
+      font-size: 1.1em;
+    }
+  </style>
+  <div>
+
+    <h3>Report Cards - Batch Generate - {{ term.term }}</h3>
+
+    {% if term.is_open %}
+      <h4>Term is still Open - Generating Drafts</h4>
+    {% endif %}
+
+
+    <h2>Combined PDFs</h2>
+
+    <p>{% trans "All report cards in one PDF file." %}</p>
+
+    <div class='row'>
+      <div class='col-xs-10'>
+        {% for grade in grades %}
+          <a class='btn btn-primary' href='{% url 'reportcard:generate_grade_batch' term.id grade.id %}'
+             target="_blank">
+            <i class="icon-print"></i> {{ grade.name }} / {{ grade.name_fr }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <h2>Zip of PDFs</h2>
+
+    <p>{% trans "All report cards in individual PDF files in a ZIP file." %}</p>
+
+    <div class='row'>
+      <div class='col-xs-10'>
+        {% for grade in grades %}
+          <a class='btn btn-primary' href='{% url 'reportcard:generate_grade_zip' term.id grade.id %}'
+             target="_blank">
+            <i class="icon-print"></i> {{ grade.name }} / {{ grade.name_fr }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+
+    <h2>Send Emails</h2>
+
+    {% if term.is_open %}
+      {% trans "Emails to parents not available while the term is open for editing." %}
+    {% else %}
+      <div class='row'>
+        <div class='col-xs-10'>
+          {% for grade in grades %}
+            <a class='btn btn-{% if emails_queued|indexnone:grade.id %}success{% else %}default{% endif %}'
+               onClick='return confirm("Are you sure you want to email all parents in {{ grade.name }} / {{ grade.name_fr }}?")'
+               href='{% url 'reportcard:email_grade_batch' term.id grade.id %}'>
+              <i class="icon-mail"></i> {{ grade.name }} / {{ grade.name_fr }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+{% endblock %}

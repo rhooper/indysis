@@ -1,0 +1,96 @@
+{% extends "reportcard_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load index %}
+{% block title %}Edit Report Card - {{ term.term }} - {{ student }}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reportcard:index' %}">Terms</a></li>
+    <li><a href="{% url 'reportcard:view_term' term.id %}{{ url_extra }}">{{ term }}</a></li>
+    <li>Edit Report Card</li>
+  </ol>
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ block.super }}
+
+  {% if conflicts %}
+    <script type="text/javascript">
+
+      $(function () {
+        var timer, handled = {};
+
+        function check() {
+          $.ajax({
+            url: "{% url 'reportcard:ping_student_edit' student.id term.id %}{{url_extra|default:"?"}}&conflict_poll=1",
+            method: 'GET',
+            cache: false,
+            success: function (data) {
+              if (data.ok) {
+                clearInterval(timer);
+                window.location.href = "{% url 'reportcard:edit_student' student.id term.id %}{{url_extra|default:"?"}}&conflict_resolve=1";
+              }
+            },
+            timeout: 10000,
+          });
+        }
+
+        timer = setInterval(check, 30000);
+      });
+
+    </script>
+  {% endif %}
+
+{% endblock %}
+
+{% block content %}
+  <div>
+
+    <h1>{{ term.term }} - {{ student.year }}: {{ student }}</h1>
+
+    <h2>Conflicting Edits</h2>
+
+    {% if not conflicts %}
+
+      <p>
+        Good news! The other user has finished editing {{ student }}.
+      </p>
+
+      <p>
+        <a class='btn btn-primary' href='{% url 'reportcard:edit_student' student.student.id term.id %}{{url_extra|default:"?"}}&conflict_done=1'>Edit {{ student }}</a>
+      </p>
+
+    {% else %}
+
+      <h3>This student is currently being edited by another user.</h3>
+
+      <p>
+        <strong>To prevent losing your work, you must wait for other edits to finish.</strong>
+      </p>
+
+
+      <div class="row">
+        <div class="col-xs-3 col-xs-push-1">
+          <p>Waiting for the other user to finish.</p>
+        </div>
+        <div class="col-xs-2 col-xs-push-1">
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped active progress-bar-warning" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ul>
+        {% for conflict in conflicts %}
+          <li>{{ conflict.conflict_str }}
+        {% endfor %}
+      </ul>
+
+
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "sis_base.html" %}
+{% load raven %}
+
+{% block title %}Error{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+
+    <h1>{{ heading|default:"Page Not Found" }}</h1>
+
+    <p><strong>{{ message }}</strong></p>
+
+    <p>The page you were looking for was not found.</p>
+
+    {% if request.sentry.id %}
+      <p>If you need assistance, you may reference this error as <strong>{{ request.sentry.id }}</strong>.</p>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

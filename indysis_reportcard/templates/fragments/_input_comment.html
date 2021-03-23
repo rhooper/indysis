@@ -1,0 +1,44 @@
+{% load index i18n %}
+
+<!-- TODO Move this to end after strands, if applicable -->
+{% if item.comments_area %}
+
+  {% if instance_errors|index:subject|indexnone:"comment" %}
+    {% for err in instance_errors|index:subject|index:"comment" %}
+      <div class='alert alert-danger'>{{ err }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {{ element_to_form|index:subject|index:"comment" }}
+
+  {% if terms %}
+    <div class='prev-term'>{% trans "Previous terms" %}:
+      {% for t in terms %}
+        <div class=''>
+          <a href='#' class="btn-small btn btn-primary" data-toggle="collapse" expanded="false" aria-controls="comment-{{ subject.id }}-{{ t }}" href="#comment-{{ subject.id }}-{{ t }}">{% trans "Term" %}{{ t }}</a>
+        </div>
+      {% endfor %}
+    </div>
+    {% for t in terms %}
+      <div class='row'>
+        <div class='col-xs-12'>
+          <div class="collapse" id="comment-{{ subject.id }}-{{ t }}">
+            <p>
+              <u>{% trans "Term" %} {{ t }}</u>
+            </p>
+            <p>
+              {% if element_to_past|index:t|indexnone:item %}
+                {{ element_to_past|index:t|index:item|attr:"comment" }}
+              {% else %}
+                n/a
+              {% endif %}
+            </p>
+            <p>
+              <a href='#' data-toggle="collapse" expanded="true" aria-controls="comment-{{ subject.id }}-{{ t }}" href="#comment-{{ subject.id }}-{{ t }}">Close</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endif %}

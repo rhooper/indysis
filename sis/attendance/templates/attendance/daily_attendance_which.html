@@ -1,0 +1,62 @@
+{% extends "sis_base.html" %}
+{% load index i18n %}
+
+{% block title %}Attendance Selection | {{ config.SCHOOL_NAME }}{% endblock %}
+
+{% block extrahead %}
+  <script type="text/javascript" src="/admin/jsi18n/"></script>
+  {{ formset.media }}
+  <style type="text/css">
+    .attendance.row {
+      border-bottom: 1px solid #ccc;
+      margin: 2px 2px;
+      line-height: 1.5em;
+    }
+  </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'attendance:daily_attendance' %}">Attendance</a></li>
+    <li>Select Class</li>
+  </ol>
+{% endblock %}
+
+{% block content %}
+  <h2> Select a class for attendance </h2>
+
+  <div class="row">
+    <div class="col-md-8 col-xs-12"><h4>Date: {{ date|date:"l F jS, Y" }}</h4></div>
+    <div class="col-md-2 col-xs-6"><h4><a href="{{ request.path }}?date={{ yesterday|date:"Y-m-d" }}">{% trans "Yesterday" %}</a></h4></div>
+    <div class="col-md-2 col-xs-6"><h4><a href="{{ request.path }}?date={{ tomorrow|date:"Y-m-d" }}">{% trans "Tomorrow" %}</a></h4></div>
+  </div>
+
+  {% if message %}
+    <p><strong>{{ message }}</strong></p>
+  {% endif %}
+
+  <div class='attendance row'>
+    <div class='col-xs-3'><h4>Class</h4></div>
+    <div class='col-xs-2'><h4>{{ am_label }}</h4></div>
+    <div class='col-xs-2'><h4>{% if not once %}{{ pm_label }}{% endif %}</h4></div>
+  </div>
+  {% for student_class in classes %}
+    <div class='attendance row'>
+      <div class='col-xs-3'><label>{{ student_class.name }}</label></div>
+      <div class='col-xs-2'>
+        <div class='btn btn-{% if prior|index:student_class.id|indexnone:"am" %}success{% else %}default{% endif %}'>
+          {% if not once %}<i class="far fa-clock"></i>{% endif %}
+          <a href="{% url 'attendance:daily_attendance' student_class.id %}?ampm=am&date={{ date_str }}">{{ am_label }}</a>
+        </div>
+      </div>
+      {% if not once %}
+      <div class='col-xs-2'>
+        <div class='btn btn-{% if prior|index:student_class.id|indexnone:"pm" %}success{% else %}default{% endif %}'>
+          <i class="fas fa-clock"></i> <a href="{% url 'attendance:daily_attendance' student_class.id %}?ampm=pm&date={{ date_str }}">{{ pm_label }}</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,200 @@
+[
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 1,
+    "fields": {
+      "name": "Junior Kindergarden",
+      "shortname": "JK",
+      "name_fr": "Maternelle",
+      "shortname_fr": "JK",
+      "is_active": true,
+      "next_grade": 2
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 2,
+    "fields": {
+      "name": "Senior Kindergarden",
+      "shortname": "SK",
+      "name_fr": "Jardin",
+      "shortname_fr": "SK",
+      "is_active": true,
+      "next_grade": 3
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 3,
+    "fields": {
+      "name": "Grade 1",
+      "shortname": "Gr. 1",
+      "name_fr": "première année",
+      "shortname_fr": "1ière",
+      "is_active": true,
+      "next_grade": 4
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 4,
+    "fields": {
+      "name": "Grade 2",
+      "shortname": "Gr. 2",
+      "name_fr": "deuxième année",
+      "shortname_fr": "2e",
+      "is_active": true,
+      "next_grade": 5
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 5,
+    "fields": {
+      "name": "Grade 3",
+      "shortname": "Gr. 3",
+      "name_fr": "troisième année",
+      "shortname_fr": "3e",
+      "is_active": true,
+      "next_grade": 6
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 6,
+    "fields": {
+      "name": "Grade 4",
+      "shortname": "Gr. 4",
+      "name_fr": "quatrième année",
+      "shortname_fr": "4e",
+      "is_active": true,
+      "next_grade": 7
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 7,
+    "fields": {
+      "name": "Grade 5",
+      "shortname": "Gr. 5",
+      "name_fr": "cinquième année",
+      "shortname_fr": "5e",
+      "is_active": true,
+      "next_grade": 8
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 8,
+    "fields": {
+      "name": "Grade 6",
+      "shortname": "Gr. 6",
+      "name_fr": "sixième année",
+      "shortname_fr": "6e",
+      "is_active": true,
+      "next_grade": 9
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 9,
+    "fields": {
+      "name": "Grade 7",
+      "shortname": "Gr. 7",
+      "name_fr": "septième année",
+      "shortname_fr": "7e",
+      "is_active": true,
+      "next_grade": 10
+    }
+  },
+  {
+    "model": "studentdb.gradelevel",
+    "pk": 10,
+    "fields": {
+      "name": "Grade 8",
+      "shortname": "Gr. 8",
+      "name_fr": "huitième année",
+      "shortname_fr": "8e",
+      "is_active": true,
+      "next_grade": null
+    }
+  },
+  {
+    "model": "studentdb.schoolyear",
+    "pk": 1,
+    "fields": {
+      "name": "2018-2019",
+      "start_date": "2018-09-04",
+      "end_date": "2019-06-21",
+      "grad_date": null,
+      "active_year": true,
+      "principal": null,
+      "principal_title": "Head of School / Directeur",
+      "vice_principal": null,
+      "vice_principal_title": "Assistant Head / Directeur adjointe"
+    }
+  },
+  {
+    "model": "schedule.term",
+    "pk": 1,
+    "fields": {
+      "name": "Fall 2018",
+      "shortname": "Term 1",
+      "start_date": "2018-09-04",
+      "end_date": "2018-12-21",
+      "school_year": 1,
+      "active": true,
+      "school_days": null,
+      "weight": "1.000",
+      "monday": true,
+      "tuesday": true,
+      "wednesday": true,
+      "thursday": true,
+      "friday": true,
+      "saturday": false,
+      "sunday": false
+    }
+  },
+  {
+    "model": "schedule.term",
+    "pk": 2,
+    "fields": {
+      "name": "Winter 2018-2019",
+      "shortname": "Term 2",
+      "start_date": "2018-12-22",
+      "end_date": "2019-03-15",
+      "school_year": 1,
+      "active": true,
+      "school_days": null,
+      "weight": "1.000",
+      "monday": true,
+      "tuesday": true,
+      "wednesday": true,
+      "thursday": true,
+      "friday": true,
+      "saturday": false,
+      "sunday": false
+    }
+  },
+  {
+    "model": "schedule.term",
+    "pk": 3,
+    "fields": {
+      "name": "Spring 2019",
+      "shortname": "Term 3",
+      "start_date": "2019-03-16",
+      "end_date": "2019-06-21",
+      "school_year": 1,
+      "active": true,
+      "school_days": null,
+      "weight": "1.000",
+      "monday": true,
+      "tuesday": true,
+      "wednesday": true,
+      "thursday": true,
+      "friday": true,
+      "saturday": false,
+      "sunday": false
+    }
+  }
+]

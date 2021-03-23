@@ -1,0 +1,19 @@
+{% extends "sis_base.html" %}
+{% load staticfiles %}
+
+{% block title %}Administration Home{% endblock %}
+
+{% block nav_page_specific %}
+  <div role="navigation">
+    {% if dashboard %}
+      <a class="mm-customize-dashboard" href="javascript:void(0)" onclick="customize_dashboard(this);">
+        Customize Dashboard<i class="fa fa-cog fa-lg"></i>
+      </a>
+    {% endif %}
+  </div>
+{% endblock %}
+
+
+{% block content %}
+  {% include "responsive_dashboard/dashboard.html" %}
+{% endblock %}

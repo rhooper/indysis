@@ -1,0 +1,21 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify %}
+
+{% block after_field_sets %}
+  {{ block.super }}
+  {% if request.GET.return_url %}
+    <input type='hidden' name='return_url' value='{{ request.GET.return_url }}'>
+  {% elif request.POST.return_url %}
+    <input type='hidden' name='return_url' value='{{ request.POST.return_url }}'>
+  {% endif %}
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+  {% if request.GET.return_url or request.POST.return_url %}
+    {% with has_change_permission=False has_add_permission=False %}
+      {% submit_row %}
+    {% endwith %}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}

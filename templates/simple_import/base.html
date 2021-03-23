@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% block simple_import_page_title %}{% endblock %}{% endblock %}
+{% block content_title %}<h1>{% block simple_import_title %}{% endblock %}</h1>{% endblock %}
+
+{% block breadcrumbs %}
+  <ol class="breadcrumb">
+    <li class="home">
+      <a href="{% url 'admin:index' %}" title="{% trans 'Home' %}"><span
+          class="glyphicon glyphicon-home"></span></a>
+    </li>
+    <li><a href="/administration/dashboard">{% trans "Management" %}</a></li>
+    <li><a href="{% url "simple_import-start_import" %}">Import</a></li>
+    {% if simple_import_title %}
+      <li class="active">{{ simple_import_title }}</li>
+    {% endif %}
+  </ol>
+{% endblock %}
+
+{% block content %}
+  {% block simple_import_form %}{% endblock %}
+{% endblock %}

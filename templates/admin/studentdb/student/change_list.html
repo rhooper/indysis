@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+
+<!-- OBJECT-TOOLS -->
+{% block object-tools-items %}
+  {% if has_add_permission %}
+    <li>
+      <a href="/admin/studentdb/student/recover/"> Recover deleted students </a>
+    </li>
+    {{ block.super }}
+  {% endif %}
+{% endblock %}

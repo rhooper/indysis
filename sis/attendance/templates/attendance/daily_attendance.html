@@ -1,0 +1,164 @@
+{% extends "sis_base.html" %}
+{% load bootstrap i18n %}
+
+{% block title %}Attendance | {{ config.SCHOOL_NAME }}{% endblock %}
+
+{% block breadcrumbs %}
+  <ul class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'attendance:daily_attendance' %}">Attendance</a></li>
+    <li>Take Attendance</li>
+  </ul>
+{% endblock %}
+
+{% block extrahead %}
+  {{ formset.media }}
+
+  <style type="text/css">
+    .btn.attendance-btn {
+      font-family: Arial, sans-serif;
+      font-weight: normal;
+    }
+
+    select[disabled] {
+      color: black;
+    }
+  </style>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('.student_select').attr('disabled', 'disabled');
+      $('.student_select:first').focus();
+
+      $('a.attendance').click(function () {
+        var tgt = $(this).attr('data-target');
+        $(this).parent().find('.btn.btn-primary').removeClass('btn-primary').addClass('btn-default');
+        $(this).removeClass('btn-default').addClass('btn-primary');
+        $('#' + tgt).val($(this).attr('data-value'));
+      });
+
+      function set_to_present() {
+        $('.attendance-row').each(function (a, row) {
+          if ($(row).find('.btn.btn-primary').length) {
+          } else {
+            $(row).find('.btn.Present').click();
+          }
+        });
+      }
+      $(".set-present").click(set_to_present);
+
+      $('#id_form-0-status').focus();
+
+      function submit_check() {
+        var num = parseInt($('#id_form-TOTAL_FORMS').val());
+        var done = $('.attendance-btn.btn-primary').length;
+        if (done > 0) {
+          $('.set-present span.rest-all').text('remaining');
+        }
+        if (done == num) {
+          $('.set-present').text('All students entered');
+          $('.set-present').removeClass('btn-warning').addClass('btn-default').addClass('disabled');
+          $('.submit-btn').removeClass('btn-danger').addClass('btn-success');
+          $('.submit-btn').val('Submit Attendance');
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      $('.attendance-btn').click(submit_check);
+
+      $('.submit-btn input').click(function () {
+        if (submit_check()) {
+          $('.student_select').removeAttr('disabled');
+          return true;
+        } else {
+          alert('Attendance must be entered for all students.');
+          return false;
+        }
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <h2>{{ student_class.name }} Attendance
+    {% if not once %}- {{ ampm|upper }}{% endif %}</h2>
+
+  <div class='btn btn-warning'>
+    <a href="{% url 'attendance:daily_attendance' %}?ANY=1">Take attendance for a different class</a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 col-xs-12"><h4>Date: {{ date|date:"l F jS, Y" }}</h4></div>
+    <div class="col-md-2 col-xs-6"><h4><a href="{{ request.path }}?ampm={{ ampm }}&date={{ yesterday|date:"Y-m-d" }}">{% trans "Yesterday" %}</a></h4></div>
+    <div class="col-md-2 col-xs-6"><h4><a href="{{ request.path }}?ampm={{ ampm }}&date={{ tomorrow|date:"Y-m-d" }}">{% trans "Tomorrow" %}</a></h4></div>
+  </div>
+
+
+  <form method="post" action="" id="myform">
+    {{ formset.management_form }}
+    {% csrf_token %}
+
+    <p><strong>{{ formset.non_form_errors }}
+      {{ msg|safe }}</strong></p>
+
+    <table class='table table-bordered table-striped table-responsive'>
+      <thead>
+      <tr>
+        <td><strong>Student</strong></td>
+        <td><strong>Attendance</strong></td>
+        <td><strong>Note</strong></td>
+      </tr>
+      </thead>
+      <tbody>
+
+      {% for student in students %}
+        <tr class='attendance-row'>
+          <td>
+              {% if student.pic %}
+                <div style='float: left; margin-right: 5px; height: 40px; width: 40px; background: url({{ student.pic.url_70x65 }}) -6px -6px no-repeat'></div>
+              {% endif %}
+              {{ student.form.non_field_errors }} <strong> {{ student }}</strong>
+          </td>
+
+          <td class='attendance-group'>
+            {% for id, name in student.form.fields.status.choices %}
+              {% if id %}
+                {% if once %}
+                  <a class="btn btn-{% if student.form.status.value == id %}primary {% else %}default {% endif %} attendance-btn attendance {{ name|cut:" " }}"
+                    onClick='return false' href="#" data-value='{{ id }}' data-target='{{ student.form.status.auto_id }}'>{{ name }}</a>
+                {% elif ampm == 'am' and id == absent_ids.pm %}
+                {% elif ampm == 'pm' and id == absent_ids.am and not student.form.status.value == id %}
+                {% elif ampm == 'pm' and id == absent_ids.all_day and student.form.status.value != absent_ids.all_day and student.form.status.value != absent_ids.am %}
+                {% elif ampm == 'pm' and id == absent_ids.pm and  student.form.status.value == absent_ids.am %}
+                {% else %}
+                  <a class="btn btn-{% if student.form.status.value == id %}primary {% else %}default {% endif %} attendance-btn attendance {{ name|cut:" " }}"
+                    onClick='return false' href="#" data-value='{{ id }}' data-target='{{ student.form.status.auto_id }}'>{{ name }}</a>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {{ student.form.status.errors }} {{ student.form.date }}
+            {{ student.form.status.as_hidden }}
+          </td>
+          <td>
+            {{ student.form.notes|bootstrap_inline }} {{ student.form.notes.errors }} {{ student.form.enroll_note }}
+            {% for hid in student.form.hidden_fields %} {{ hid }} {% endfor %}
+            {{ student.form.errors }}
+          </td>
+
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <br>
+
+    <a class="btn btn-warning set-present" href="#" onclick="return false">Mark <span
+        class='rest-all'>all</span> students as Present</a>
+    <input type="submit" class="submit-btn btn btn-danger" value="Not ready to submit yet" />
+
+    <br>
+    <br>
+  </form>
+
+{% endblock %}

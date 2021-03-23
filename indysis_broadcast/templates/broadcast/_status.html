@@ -1,0 +1,13 @@
+ <div class="panel panel-primary">
+  <div class="panel-heading">Emergency Broadcast</div>
+  <div class="panel-body text-message">
+    {{ broadcast.message }}
+  </div>
+  <div class="panel-footer">
+    Status: {{ broadcast.status }}.
+    {{ broadcast.num_recipients }} recipients.
+    {{ broadcast.num_queued }} queued.
+    {{ broadcast.num_sent }} sent.
+    {{ broadcast.num_failed }} failed.
+  </div>
+ </div>

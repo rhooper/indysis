@@ -1,0 +1,40 @@
+<div class="acl-emergency-contact-wrapper" data-value="{{ choice.pk }}">
+  <div class="acl-emergency-contact">
+    {% if choice.relationship_to_student %}
+      <span class="label label-primary">{{ choice.relationship_to_student }}</span>
+    {% endif %}
+    <span class="acl-contact-name">{{ choice.fname }} {{ choice.lname }}</span>
+    {% if choice.primary_contact %}
+      <span class="label label-primary">Primary Contact</span>
+    {% endif %}
+    {% if choice.emergency_only %}
+      <span class="label label-warning">Emergency Only</span>
+    {% endif %}
+    <a class="btn btn-xs btn-default" href="{% url 'admin:studentdb_emergencycontact_change' choice.pk %}"
+       target="_blank">Edit</a>
+    {% if choice.street %}<br/>{{ choice.street }}, {{ choice.city }}, {{ choice.state }} {{ choice.zip }}{% endif %}
+    <br>
+    {% if choice.email %}
+      <a href="mailto:{{ choice.email }}">Email: {{ choice.email }}</a>
+    {% endif %}
+    {% if choice.alt_email %}
+      <a href="mailto:{{ choice.alt_email }}">Email: {{ choice.alt_email }}</a>
+    {% endif %}
+    <ul class="list-unstyled">
+      {% for ecn in choice.emergencycontactnumber_set.all %}
+        <li>
+          {% if ecn.get_type_display %}
+            {{ ecn.get_type_display }}:
+          {% endif %}
+          {{ ecn.number }}
+          {% if ecn.ext %}
+            x{{ ecn.ext }}
+          {% endif %}
+          {% if ecn.primary %}
+            <span class="label label-primary">Primary Number</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+{% extends "reportcard_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load index %}
+
+{% block title %}Report Cards - Comments Report - {{ term.term }}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reportcard:index' %}">Terms</a></li>
+    <li><a href="{% url 'reportcard:index' %}">Terms</a></li>
+    <li><a href="{% url 'reportcard:term_admin' term.id %}">{{ term }}</a></li>
+    <li>Comments Report</li>
+  </ol>
+{% endblock %}
+
+{% block content %}
+
+  <div>
+
+    <h3>Report Cards - Comment Reports - {{ term.term }}</h3>
+
+    {% if term.is_open %}
+      <h4>Term is still Open - Generating Drafts</h4>
+    {% endif %}
+
+    <br>
+    <br>
+
+    <div class='row'>
+      <div class='col-xs-7'>
+        {% for grade in grades %}
+          <a class='btn btn-primary' href='{% url 'reportcard:generate_comment_report' grade.id term.id %}'
+                                          target=_blank>Generate {{ grade }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+
+
+{% endblock %}

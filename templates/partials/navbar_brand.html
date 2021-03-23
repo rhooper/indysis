@@ -1,0 +1,9 @@
+<a class="navbar-brand" href="/studentdb/dashboard">
+  {% if config.SCHOOL_NAME_MENU|default:config.SCHOOL_NAME != "Unnamed School" %}
+    <img src="{{ brand_image_url }}" alt='' title="{{ config.SCHOOL_NAME_MENU|default:config.SCHOOL_NAME }}" class="img-responsive">
+    {{ config.SCHOOL_NAME_MENU|default:config.SCHOOL_NAME }}
+  {% else %}
+    <img src="{{ brand_image_url }}" alt='' title="IndySIS" class="img-responsive">
+    IndySIS
+  {% endif %}
+</a>

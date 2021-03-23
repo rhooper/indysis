@@ -1,0 +1,50 @@
+{% extends "sis_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block content %}
+
+  <style type="text/css">
+    table td, table th, table a {
+      font-size: 11pt;
+      line-height: 15pt;
+    } </style>
+
+  <h2>{{ class }}</h2>
+
+  <p><a href='{% url 'studentdb:class_list' class.id %}?pics=1'>Photo Book</a>
+
+  <table class="table-responsive table table-bordered table-striped">
+    <thead>
+    <th>Student</th>
+    <th>Gender</th>
+    <th>Birthday</th>
+    <th>Age</th>
+    <th>Mother</th>
+    <th>Father</th>
+    </thead>
+    <tbody>
+    {% for student in students %}
+      <tr>
+        <td><a href='{% url 'studentdb:view-student' student.id %}'>{{ student.fullname }}</a></td>
+        <td>{% firstof student.sex %}</td>
+        <td>{% firstof student.bday %}</td>
+        <td>{{ student.age }}</td>
+        <td>
+          {{ student.mother.fullname }}<br>
+          {{ student.mother.email }}<br>
+          {% firstof student.mother.primary_phone %}<br>
+        </td>
+        <td>
+          {{ student.father.fullname }}<br>
+          {{ student.father.email }}<br>
+          {% firstof student.father.primary_phone %}<br>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  Total Students: {{ students.count }}
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "sis_base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+
+{% block content %}
+
+  <h2>{% trans "Classes" %}</h2>
+
+  <table class="table-responsive table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th>{% trans "Class" %}</th>
+      <th>{% trans "No. of Students" %}</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for c in classes %}
+      <tr>
+        <td><a href='{% url 'studentdb:class_list' c.id %}'>{{ c.name }}</a></td>
+        <td>{{ c.active_students.count }}</td>
+        <td><a href='{% url 'studentdb:class_list' c.id %}?pics=1'>Photo Book</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% trans "Total Students" %}: {{ total_students }}
+
+{% endblock %}

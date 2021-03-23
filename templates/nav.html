@@ -1,0 +1,160 @@
+{% load staticfiles %}
+{% load i18n %}
+{% load sis_tags %}
+
+<nav class="navbar {{ config.NAVBAR_CLASS }} navbar-fixed-top">
+  <div class="container">
+
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      {% navbar_brand %}
+    </div>
+
+    <div id="navbar" class="navbar-collapse collapse">
+
+      <ul class="nav navbar-nav">
+
+        {% if perms.change_student or perms.studentdb.view_student or perms.studentdb.reports or perms.alumni %}
+          <li class="{% if app_name == "studentdb" %} active{% endif %} dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+               aria-expanded="false">{% trans "Students" %} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/studentdb/dashboard/">{% trans "Dashboard" %}</a></li>
+              <li><a class="dropdown-item" href="{% url 'studentdb:list_classes' %}">{% trans "Class Lists" %}</a></li>
+              {% if perms.studentdb.change_student %}
+                <li><a class="dropdown-item"
+                       href="{% url "admin:studentdb_student_changelist" %}">{% trans 'Edit Students' %}</a></li>
+              {% endif %}
+              {% if perms.studentdb.reports %}
+                <li><a href='{% url 'studentdb:student_reports' %}'>{% trans "Reports" %}</a></li>
+              {% endif %}
+              {% if perms.alumni %}
+                <li><a href="/alumni/dashboard/">{% trans "Alumni" %}</a></li>
+              {% endif %}
+            </ul>
+          </li>
+        {% endif %}
+
+        {% if perms.attendance %}
+          <li class="{% if app_name == "attendance" %} active{% endif %} dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+               aria-expanded="false">{% trans "Attendance" %} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              {% if perms.attendance.take_studentattendance %}
+                <li><a class="dropdown-item"
+                       href="{% url 'attendance:daily_attendance' %}"> {% trans 'Take Attendance' %} </a></li>
+              {% endif %}
+              {% if perms.attendance.view_studentattendance %}
+                <li><a class="dropdown-item"
+                       href="{% url 'attendance:exception_report' %}"> {% trans 'Attendance Exceptions' %} </a></li>
+              {% endif %}
+              {% if perms.attendance.change_studentattendance %}
+                <li><a class="dropdown-item"
+                       href="{% url 'admin:attendance_studentattendance_add' %}"> {% trans 'Add attendance record' %} </a></li>
+              {% endif %}
+              {% if perms.studentdb.change_bulkafterschoolattendanceentry %}
+                <li><a class="dropdown-item"
+                       href="{% url 'studentdb:afterschool_bulk_form' 1 %}"> {% trans 'Record after school Attendance' %} </a></li>
+              {% endif %}
+              {% if perms.studentdb.change_bulkbeforeschoolattendanceentry %}
+                <li><a class="dropdown-item"
+                       href="{% url 'studentdb:beforeschool_bulk_form' 1 %}"> {% trans 'Record before school Attendance' %} </a></li>
+              {% endif %}
+            </ul>
+          </li>
+        {% endif %}
+
+        {% load navutils_tags %}
+        {% render_menu menu=menus.main user=request.user %}
+
+        {% block extra_module_nav %}{% endblock %}
+
+        {% if perms.studentdb.view_student %}
+          <form id="lookup-student-form" class="navbar-form navbar-left" role="search">
+            <div class="input-group">
+              <div class="input-group-addon"><i class="fa fa-search"></i></div>
+              <input id="lookup-student" class="form-control" type="text"
+                     placeholder="{% trans "Find Student/Parent" %}"
+                     aria-label="{% trans "Find Student or Parent" %}"/>
+              <input id="lookup-parent" type="hidden">
+            </div>
+          </form>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <ul class="nav navbar-nav">
+            <li class="dropdown navbar-right">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                 aria-expanded="false">{% if request.user.first_name or request.user.last_name %}
+                {{ request.user.first_name }} {{ request.user.last_name }}
+              {% else %}
+                {{ request.user }}
+              {% endif %} <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url "studentdb:user_preferences" %}">{% trans "Preferences" %}</a>
+                </li>
+                <li><a class="dropdown-item" href="{% url 'logout_view' %}">{% trans "Logout" %}</a></li>
+              </ul>
+            </li>
+          </ul>
+        {% else %}
+          <ul class="nav navbar-nav">
+            <li><a class="dropdown-item" href="{% url 'login_view' %}">{% trans "Login" %}</a></li>
+          </ul>
+        {% endif %}
+
+    </div>
+  </div>
+</nav>
+
+<script>
+  function bindYLA() {
+    var $ = jQuery;
+    var element = $('#lookup-student');
+    if (element.length == 0) {
+      return;
+    }
+    element.keypress(function() {
+      $("#lookup-parent").val(element.val());
+    });
+    element.yourlabsAutocomplete({
+      url: '/autocomplete/StudentLookupStudentAutocomplete/',
+      choiceSelector: 'a',
+      box: $('<span class="yourlabs-autocomplete autocomplete-lookup-student"></span>'),
+      fixPosition: function () {
+        // Insert the autocomplete container after the input.
+        var pos = $.extend({}, this.input.position(), {
+          height: this.input.outerHeight()
+        });
+        this.input.parents().filter(function () {
+          return $(this).css('overflow') === 'hidden';
+        }).first().css('overflow', 'visible');
+
+        this.box.insertAfter(this.input).css(
+          { top: pos.top + pos.height, left: pos.left, 'min-width': pos.width }
+        );
+      }
+    }).input.bind('selectChoice', function (e, choice, autocomplete) {
+      window.location.href = choice.attr('href');
+    });
+
+  }
+  function ready(callback) {
+    // in case the document is already rendered
+    if (document.readyState != 'loading') callback();
+    // modern browsers
+    else if (document.addEventListener) document.addEventListener('DOMContentLoaded', callback);
+    // IE <= 8
+    else document.attachEvent('onreadystatechange', function () {
+        if (document.readyState == 'complete') callback();
+      });
+  }
+
+  ready(bindYLA);
+</script>

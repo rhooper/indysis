@@ -1,0 +1,65 @@
+{% load bootstrap3 %}
+<html>
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic,700,700italic'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+    {% bootstrap_css %}
+
+</head>
+<body>
+
+<style>
+  table.marks tr td, table.marks tr th {
+    padding: 2px;
+    font-size: 14px;
+  }
+  table.students tr {
+    page-break-after: auto;
+    page-break-inside: avoid;
+  }
+  h4 {
+    page-break-before: always;
+  }
+  h4:first-of-type {
+    page-break-before: avoid;
+  }
+</style>
+<h2>Report Card Grades and Comments {{ data.grade }}</h2>
+{% for subject in data.subjects %}
+
+  <h4>{{ data.grade }}: {{ subject.name }}</h4>
+  <p>Teacher(s): {{ subject.teacher }}</p>
+  <br>
+  <table class="table table-bordered students">
+    {% for row in subject.grid %}
+      <tr>
+        <th width="25%">{{ row.student.fullname }}</th>
+        {% if row.marks %}
+          <td width="45%">
+            <table class="table-striped table table-condensed marks">
+              {% for mark in row.marks %}
+                <tr>
+                  <th width="50%">{{ mark.0|truncatechars:32 }}</th>
+                  <td width="50%" align="center">
+                    {{ mark.1 }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </td>
+        {% endif %}
+        <td width="30%">
+          {{ row.comments|linebreaksbr }}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <br>
+
+{% endfor %}
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "sis_base.html" %}
+{% load i18n bootstrap static %}
+
+{% block title %}{% trans "Review and Test - Emergency Broadcast" %}{% endblock %}
+
+{% block nav_page_specific %}
+  <ol class="breadcrumb">
+    <li><a href="/">{% trans "Home" %}</a></li>
+    <li>{% trans "Emergency Broadcast" %}</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+  <h1>{% trans "Status - Emergency Broadcast" %}</h1>
+
+  {% include "broadcast/_status.html" %}
+
+  <a href="{% url 'broadcast:status' broadcast.id %}">Refresh</a>
+
+  {% include "broadcast/_table.html" %}
+
+{% endblock %}

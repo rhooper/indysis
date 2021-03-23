@@ -1,0 +1,39 @@
+{% extends "simple_import/base.html" %}
+
+{% block simple_import_page_title %}Import Results{% endblock %}
+
+{% block simple_import_title %}Import Results{% endblock %}
+
+{% block simple_import_form %}
+  {% if success_undo %}
+    <p>
+      Import was undone. This is now a simulation, you can run the import again.
+    </p>
+  {% endif %}
+
+  {% if create_count %}
+    Created: {{ create_count }} <br/>
+  {% endif %}
+  {% if update_count %}
+    Updated: {{ update_count }} <br/>
+  {% endif %}
+
+  {% if fail_count %}
+    Failed: {{ fail_count }} <br/>
+    <a href="{{ import_log.error_file.url }}">Download failed records</a>
+  {% endif %}
+
+
+  {% if commit %}
+    {% if import_log.import_type == "N" %}
+      <p>
+        It's possible to undo Create only reports. <a href="?commit=False&undo=True">Click here to undo.</a>
+        If you imported properties that created other records, we can not guarentee those records will be removed.
+      </p>
+    {% endif %}
+  {% else %}
+    <p>
+      This was only a simulation. <a href="?commit=True&undo=False">Click here to run the import.</a>
+    </p>
+  {% endif %}
+{% endblock %}

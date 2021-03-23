@@ -1,0 +1,16 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  {% if has_add_permission %}
+    <li>
+      <a href="{% url "attendance:daily_attendance" %}"> Attendance </a>
+    </li>
+    <li>
+      <a href="{% url "attendance:exception_report" %}"> Today's submissions </a>
+    </li>
+    <li>
+      <a href="{% url "attendance:add_multiple" %}"> Add Multiple </a>
+    </li>
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
