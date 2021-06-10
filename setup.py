@@ -37,7 +37,7 @@ setup(
         'django-setuptest',
     ),
     install_requires=[
-        'django<2',
+        'django<3',
         'django-autocomplete-light==2.3.6',
         'django-favicon-plus',
         'social-auth-app-django',
