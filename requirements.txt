@@ -98,7 +98,7 @@ PyJWT==1.6.4
 pylint==2.7.2
 pynliner==0.8.0
 pyparsing==2.4.7
-PyPDF2==1.26.0
+PyPDF2==1.27.5
 python-crontab==2.3.5
 python-dateutil==2.7.4
 python3-openid==3.1.0
