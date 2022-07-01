@@ -65,7 +65,7 @@ setup(
         'django-phonenumber-field',
         'django-picklefield',
         'django-admin-timestamps',
-        'openpyxl<2.4',
+        'openpyxl<2.5',
         'celery',
         'django-libsass',
         'django-environ',
