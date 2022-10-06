@@ -58,7 +58,7 @@ django-timezone-field==3.0
 django-widget-tweaks==1.4.3
 djangorestframework==3.9.4
 docutils==0.16
-dparse==0.5.1
+dparse==0.5.2
 drf-url-filters==0.5.1
 ecdsa==0.16.1
 et-xmlfile==1.0.1
